@@ -435,7 +435,7 @@ plankton_raw_table <- read.csv("Phytoplankton_species_plot2024.csv", header= TRU
 #Plotting 
 plankton_species_plot <- ggplot(plankton_raw_table, aes(x= reorder(Species, -Average_Abundance), y = Average_Abundance))+
   geom_bar(stat = "identity", fill = "#00AAE7")+
-  labs(title = "Phytoplankton Bloom Species in Long Island Sound, Jan - Apr 2024", x= "Phytoplankton Bloom Species in LIS", y= "Average Abundance (Cell Count/Liter")+
+  labs(title = "Phytoplankton Bloom Species in Long Island Sound, Jan - Apr 2024", x= "Phytoplankton Bloom Species in LIS", y= "Average Abundance (Cell Count/Liter)")+
   theme_minimal()+
   theme(axis.text = element_text(angle = 45, hjust = 1))
 
