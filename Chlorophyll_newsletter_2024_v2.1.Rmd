@@ -297,7 +297,7 @@ When compared, in situ sampled chlorophyll concentrations vary slightly from sat
 
 Phytoplankton are critical to the health of marine ecosystems. As autotrophic organisms, phytoplankton form the base of the aquatic food web while also producing a large portion of Earth's oxygen, regulating ocean nutrient cycles, and assisting in the removal of carbon dioxide from the atmosphere (Suthers et al 2019). Often, phytoplankton have been compared to canaries in the coal mine with their sensitivity to environmental changes. This high sensitivity to change allows researchers to identify the health of the water body based on phytoplankton diversity and abundance (Suthers et al 2019). Phytoplankton in nutrient saturated waters typically display a rapid increase in population growth; therefore, rapid population growth is an indicator of heavy nutrient input. This pattern is commonly reflected in the western basin of Long Island Sound during the spring and summer, where productivity rates increase with the warming season leading to greater inputs of nutrients from the land.  
 
-Below, different phytoplankton species collected over the spring 2003 survey season from different sample stations across Long Island Sound are displayed. Click each station to view each species. 
+Phytoplankton abundance per sample station in Long Island Sound are shown below. Samples were collected between late January and early April 2024 to summarize the 2024 spring survey season.  Click each station to view the phytoplankton abundance (cell counts per liter). 
 
 ```{r,fig.cap = '<i> Phytoplankton abundance per sample station in Long Island Sound during the Spring 2024 sampling season. </i>'}
 #Load Data
@@ -366,15 +366,6 @@ ggplot(Spring_surface_plankton_data, aes(x= Station, y= Cell_Count, fill = Speci
       facet_wrap(~Month_Name)+
       theme_minimal()+
       theme(axis.title.y=element_text(margin=margin(r=10)))
- 
-#Cowplot code
-#plot_no_legend <- lapply(spring_plots, function(x) x + theme(legend.position = "none"))
-#legend <- cowplot::get_legend(spring_plots[[1]] + theme(legened.position = "bottom"))
-#title <- cowplot::ggdraw() + cowplot::draw_label("Sruface Phytoplankton in Long Island Sound, Spring 2024", fontface = "bold")
-#plot_grid <- cowplot::plot_grid(plotlist = plot_no_legend, ncol = 2)
-#cowplot::plot_grid(title, plot_grid, ncol=1, rel_heights = c(0.1, 1, 0.2))
-
-#Facet_wrap only displays a couple bar per graph, grid.arrange() was too squished because of legends, cow_plot code is supposed to move the legend to the bottom to give plots more room but isn't working (coming back to this)
 ```
 
 Although Diatoms dominate the spring season in Long Island Sound, they can often be out competed by other species including Dinoflagellates in the summer months, as show in August in the plot above (Figure 8). This is likely due to the stratification of the water column over the summer months, where Dinoflagellates have the competitive advantage of being autotrophic and heterotrophic, whereas diatoms are primarily autotrophic.  
