@@ -421,7 +421,7 @@ knitr::include_graphics("plankton_figure.png")
 
 </br>
 
-Phytoplankton samples for the 2024 spring survey season were collected by Connecticut’s Department of Energy and Environmental Protection Long Island Sound Water Quality Monitoring Team. Sample processing and species counts/identification are conducted by the [Lin Lab](https://phytoplankton.uconn.edu/) at the University of Connecticut Avery Point. The most common species across all sample locations for the 2024 spring survey season were *Skeletonema spp.*, *Eucampia zodiacus*, and *Guinardia delicatula* (Figure 11).   
+Phytoplankton samples for the 2024 spring survey season were collected by Connecticut’s Department of Energy and Environmental Protection Long Island Sound Water Quality Monitoring Team. Sample processing and species counts/identification are conducted by the [Lin Lab](https://phytoplankton.uconn.edu/) at the University of Connecticut Avery Point. The most common bloom species across all sample locations for the 2024 spring survey season were *Skeletonema spp.*, *Guinardia delicatula*, and *Thalassionema nitzschiodes* (Figure 11).   
 
 </br>
 
@@ -430,52 +430,21 @@ Phytoplankton samples for the 2024 spring survey season were collected by Connec
 #Prevents Scientific Notation 
 options(scipen = 999)
 
-plankton_raw_table <- read.csv("plankton_abundance2024.csv", header= TRUE, na.strings= c("-999", "NA", "-"))
+plankton_raw_table <- read.csv("Phytoplankton_species_plot2024.csv", header= TRUE, na.strings= c("-999", "NA", "-"))
 
-#Cleaning Data (Removing and merging certain rows)
-#Removing Rows 
-#plankton_raw_table <- plankton_raw_table[-c(221,222), ]
+#Plotting 
+plankton_species_plot <- ggplot(plankton_raw_table, aes(x= reorder(Species, -Average_Abundance), y = Average_Abundance))+
+  geom_bar(stat = "identity", fill = "#00AAE7")+
+  labs(title = "Phytoplankton Bloom Species in Long Island Sound, Jan - Apr 2024", x= "Phytoplankton Bloom Species in LIS", y= "Average Abundance (Cell Count/Liter")+
+  theme_minimal()+
+  theme(axis.text = element_text(angle = 45, hjust = 1))
 
-#Average plankton counts 
-averaged_plankton_table <- plankton_raw_table %>%
-  rowwise() %>%
-  mutate(
-    A4_avg = mean(c_across(starts_with("A4")), na.rm = TRUE),
-    B3_avg = mean(c_across(starts_with("B3")), na.rm = TRUE),
-    C1_avg = mean(c_across(starts_with("C1")), na.rm = TRUE),
-    D3_avg = mean(c_across(starts_with("D3")), na.rm = TRUE),
-    E1_avg = mean(c_across(starts_with("E1")), na.rm = TRUE),
-    F2_avg = mean(c_across(starts_with("F2")), na.rm = TRUE),
-    H4_avg = mean(c_across(starts_with("H4")), na.rm = TRUE),
-    I2_avg = mean(c_across(starts_with("I2")), na.rm = TRUE),
-    J2_avg = mean(c_across(starts_with("J2")), na.rm = TRUE),
-    K2_avg = mean(c_across(starts_with("K2")), na.rm = TRUE)
-  ) %>%
-  ungroup()
-
-
-#Calculate average abundance across all columns, exclude species with no data
-species_abundance2024 <- plankton_raw_table %>%
-  rowwise() %>%
-  mutate(Avg_Abundance = mean(c_across(-SampleID), na.rm = TRUE)) %>%
-  ungroup() %>%
-  filter(!is.na(Avg_Abundance)) %>%  #Filters out species with no data
-  arrange(desc(Avg_Abundance)) %>%
-  slice_head(n = 10) #Filters for the top 10 greatest
-
-
-#Plotting
-ggplot(species_abundance2024, aes(x = reorder(SampleID, -Avg_Abundance), y = Avg_Abundance)) +
-  geom_bar(stat = "identity", fill = "#00AAE7") + #Brand standard color "Clear Blue"
-  ylim(0, 1200000) +
-  labs(title= "Phytoplankton Species Abundance in Long Island Sound, Feb-Apr 2024", x = "Phytoplankton Species 2024", y="Average Cell Abundance") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ggplotly(plankton_species_plot, tooltip = c("Average_Abundance"), fig.align = "center")
 ```
 
 </br>
 
-The phytoplankton species displayed above (Figure 11) are the ten species with the greatest average abundance from samples collected over the spring 2024 survey season. Out of all phytoplankton species found in Long Island Sound during the spring survey period, *Skeletonema spp.* contributed the most to chlorophyll concentrations observed in collected samples. *Skeletonema spp.* are commonly the most abundant species in estuarine ecosystems as they prefer brackish waters and have a wide range in salinity tolerance (Balzano et al 2011). The broad salinity tolerance of *Skeletonema spp.* make Long Island Sound an ideal location for this species due to the frequent fluctuations in salinity based on season and location within the sound, a factor that inhibits more salinity sensitive species from thriving in the same environment. *Skeletonema spp.* also have the competitive advantage of a resting stage, where this species can survive in the bottom sediment of a waterbody during adverse conditions and resume growth as conditions become more favorable (Gu et al 2012). Spring and autumn blooms of *Skeletonema spp.* are associated with high partial pressure of dissolved carbon dioxide, a leading cause of ocean acidification. Ocean acidification has been shown to alleviate the negative effects of low temperatures and daylight conditions on the growth rate of *Skeletonema costatum*, assisting species growth earlier in the spring season as acidification increases (Li et al 2021). 
+The phytoplankton species displayed above (Figure 11) are the most common bloom species found in Long Island Sound ordered by average abundance from samples collected over the spring 2024 survey season. Out of all phytoplankton species found in Long Island Sound during the spring survey period, *Skeletonema spp.* contributed the most to chlorophyll concentrations observed in collected samples. *Skeletonema spp.* are commonly the most abundant species in estuarine ecosystems as they prefer brackish waters and have a wide range in salinity tolerance (Balzano et al 2011). The broad salinity tolerance of *Skeletonema spp.* make Long Island Sound an ideal location for this species due to the frequent fluctuations in salinity based on season and location within the sound, a factor that inhibits more salinity sensitive species from thriving in the same environment. *Skeletonema spp.* also have the competitive advantage of a resting stage, where this species can survive in the bottom sediment of a waterbody during adverse conditions and resume growth as conditions become more favorable (Gu et al 2012). Spring and autumn blooms of *Skeletonema spp.* are associated with high partial pressure of dissolved carbon dioxide, a leading cause of ocean acidification. Ocean acidification has been shown to alleviate the negative effects of low temperatures and daylight conditions on the growth rate of *Skeletonema costatum*, assisting species growth earlier in the spring season as acidification increases (Li et al 2021). 
  
 </br>
 
