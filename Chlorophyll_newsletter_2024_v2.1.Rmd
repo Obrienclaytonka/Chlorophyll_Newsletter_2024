@@ -138,18 +138,19 @@ chlorophyll_2003_2024_spring <- chlorophyll_2003_2024 %>%
   summarize(Average_yearly_chl= mean(Result, na.rm = TRUE)) %>%
   mutate_if(is.numeric,round, 2)
 
-ggplot(chlorophyll_2003_2024_spring, aes(x= Year, y= Average_yearly_chl)) +
+annual_chl <- ggplot(chlorophyll_2003_2024_spring, aes(x= Year, y= Average_Chlorophyll)) +
   geom_bar(stat = "identity", fill = "#0072BC") +
   geom_smooth(aes(group = 1), method = "lm", se= FALSE, color = "red")+ #Can comment out linear model trend line here
   labs(
     title = "Spring Seasonal Average Chlorophyll-a by Year Across LIS, 2003-2024",
     x = "Year",
-    y = "Average Chlorophyll-a (mg/m³)")+
+    y = "Average Chlorophyll-a (ppb)")+
   ylim(0,12)+
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 #axis.text.x = element_text(angle = 45, hjust = 1))
 
+ggplotly(annual_chl, tooltip = c("Average_Chlorophyll"), fig.align = "center")
 ```
 
 <hr>
@@ -190,7 +191,7 @@ avg_observed_chl_by_basin_long <- observed_chl_by_basin_long %>%
   summarise(Mean_Chlorophyll = mean(Chlorophyll, na.rm = TRUE), .groups = "drop") 
 
 #Plotting 
-ggplot(avg_observed_chl_by_basin_long, aes (x= Week, y = Mean_Chlorophyll, color =Basin)) + 
+basin_line_plot <- ggplot(avg_observed_chl_by_basin_long, aes (x= Week, y = Mean_Chlorophyll, color =Basin)) + 
   geom_line(size=1) +
   ylim(0,10) +
   labs( 
@@ -203,6 +204,8 @@ ggplot(avg_observed_chl_by_basin_long, aes (x= Week, y = Mean_Chlorophyll, color
     plot.title = element_text(hjust = 0.5, face = "bold"), 
     legend.position = "right")+ 
   theme(axis.title.y= element_text(margin =margin (r=10)))
+
+ggplotly(basin_line_plot, tooltip = c("Mean_Chlorophyll"), fig.align = "center")
 ```
 
 To create a time series by basin, the sample stations established by CT DEEP’s Long Island Sound Water Quality Monitoring Team (Figure 1) were divided into three regions: sections of western, central, and eastern basins. The western basin comprises eight stations (09,15, A4, B3, C1, C2, D3, and E1), the central basin comprises five stations (F2, F3, H2, H4, and H6), and the eastern basins comprises four stations (I2, J2, K2, and M3). Stations within each of the three basins were then averaged together respectively to create a singular averaged chlorophyll-a value per basin for each week of available satellite data. Broken down by sample station, and averaged across the 2024 sampling season, satellite observed chlorophyll-a concentrations follow similar trends to sampled data, with most observed chlorophyll-a values only within a singular value difference from the sampled chlorophyll concentrations per station (Figure 5).  
@@ -210,8 +213,7 @@ To create a time series by basin, the sample stations established by CT DEEP’s
 Between January and May 2024, satellite imagery observed higher chlorophyll-a concentrations in the western basin of Long Island Sound than either the eastern or central basins, with the exception of one week in late January where the central basin had observed slightly higher values than the western basin (Figure 3). These observations are consistent with sample data collected by CT DEEP’s Long Island Sound Water Quality Monitoring Team for the spring 2024 season. In both the sampled and satellite observed data, the western basin of Long Island Sound is identified as a higher probability area for algal blooms. 
 
 ```{r, out.width="100%", fig.cap = '<i> Satellite observed chlorphyll-a concentrations by station in Long Island Sound during the spring 2024 survey season. </i>'}
-
-ggplot(observed_chl_by_basin_long, aes(x = Week, y = Chlorophyll)) +
+station_line_plots <- ggplot(observed_chl_by_basin_long, aes(x = Week, y = Chlorophyll)) +
   geom_line(size = 1, alpha = 0.7, color = "#0D2D6c") + 
   facet_wrap(~ Sttn_Nm, scales = "fixed") + 
   labs(
@@ -221,6 +223,8 @@ ggplot(observed_chl_by_basin_long, aes(x = Week, y = Chlorophyll)) +
   ) +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"), axis.title.y= element_text(margin =margin (r=10)))
+
+ggplotly(station_line_plots, tooltip = c("Chlorophyll"), fig.align = "center") #Seems to cut off y-axis label when made into an interactive graph, unsure why or how to fix
 ```
 
 Similar to the averaged chlorophyll concentrations by basin (Figure 3), satellite observed chlorophyll separated by station (Figure 4) also displays an increase in concentrations during the month of February for most individual stations. These satellite observations are corroborated with in situ data which also shows higher chlorophyll concentrations in Long Island Sound during the month of February, particularly in the western and central basins as shown in the previous 2024 spatial interpolation animation video.  
