@@ -1,0 +1,96 @@
+/* Page Style - DEEP Brand Standards */
+@font-face {
+    font-family: 'Public Sans';
+    font-style: normal;
+    font-weight: 400;
+    src: url(https://fonts.gstatic.com/s/publicsans/v15/ijwGs572Xtc6ZYQws9YVwllKVG8qX1oyOymuFpmJxAco.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+
+  body {
+    font-family: 'Public Sans', sans-serif;
+
+  }
+
+  h1 {
+    color: #0D2D6C;
+    font-family: 'Public Sans', sans-serif;
+    font-weight: bolder;
+  }
+
+  h2 {
+    color: #00AAE7;
+    font-family: 'Public Sans', sans-serif;
+    font-weight: bold;
+  }
+
+  a {
+    color: #00AAE7;
+  }
+
+  a :hover {
+    background-color: #f6931f;
+  }
+  
+.iplot {
+  display: table;
+  margin-right: auto;
+  margin-left: auto;
+  padding: 50px 50px;
+}
+
+.itable{
+  padding: 50px 50px;
+}
+
+
+
+/* -----------HEADER IMAGE AT TOP OF PAGE -----------*/
+
+/* LARGE HEADER IMAGE AT TOP OF PAGE*/
+
+.header-image {
+    position: relative;
+    margin-bottom: 2em;
+    /* liner gradient tints the image darker for readability*/
+    background-image: linear-gradient( rgba(0,0,0,.2), rgba(0,0,0,.2) ), url(Old_lyme_deep.png); 
+    height: 400px;
+    background-size: cover;
+    background-color: #141c25f2;
+    background-position: center center;
+    display: flex; /* Change to `display: none` for no hero image */
+    justify-content: center;
+    align-items: center;
+}
+
+.top-text {
+  position: relative;
+  font-size: 34px;
+  padding-bottom: 0.5 em
+  text-transform: uppercase;
+  text-align: center;
+  display: block; /* Change to `display: none` for no top text */
+  color: #ffffff72;
+}
+
+.bottom-text {
+  position: relative;
+  letter-spacing: 0.065em;
+  line-height: 1em;
+  font-size: 40px;
+  text-transform: uppercase;
+  text-align: center;
+  display: block; /* Change to `display: none` for no bottom text */
+  color: #ffffff;
+  margin-bottom: 2 rem;
+  font-weight: bold;
+}
+
+
+main > nav {
+	position:-webkit-sticky;
+	position: sticky;
+	top: 120px; /*Controls where TOC stops when sticky */
+  width: 100% !important;
+  align-self: start;
+}
