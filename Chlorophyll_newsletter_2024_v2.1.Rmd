@@ -351,13 +351,30 @@ months_list <- unique(surface_cell_count_phytoplankton_long$Month)
   #filter(Month == c("Jan", "Feb", "Mar", "Apr"))
 
 #Vector of Spring Months 
-spr_m <- c("Jan", "Feb", "Mar", "Apr")
+spr_m1 <- c("Jan", "Feb")
+spr_m2 <- c("Mar", "Apr")
 
-Spring_surface_plankton_data <- surface_cell_count_phytoplankton_long[surface_cell_count_phytoplankton_long$Month %in% spr_m,]
+Spring_surface_plankton_data1 <- surface_cell_count_phytoplankton_long[surface_cell_count_phytoplankton_long$Month %in% spr_m1,]
+Spring_surface_plankton_data1$Month_Name <- factor(Spring_surface_plankton_data1$Month, levels = month.abb, labels = month.name)
 
-Spring_surface_plankton_data$Month_Name <- factor(Spring_surface_plankton_data$Month, levels = month.abb, labels = month.name)
+Spring_surface_plankton_data2 <- surface_cell_count_phytoplankton_long[surface_cell_count_phytoplankton_long$Month %in% spr_m2,]
+Spring_surface_plankton_data2$Month_Name <- factor(Spring_surface_plankton_data2$Month, levels = month.abb, labels = month.name)
 
-ggplot(Spring_surface_plankton_data, aes(x= Station, y= Cell_Count, fill = Species))+
+#Jan-Feb Plot (Figure 7)
+ggplot(Spring_surface_plankton_data1, aes(x= Station, y= Cell_Count, fill = Species))+
+      geom_bar(stat="Identity", position= "stack")+
+      ggtitle(paste("Surface Phytoplankton in Long Island Sound, Spring 2024"))+
+      xlab("Sample Stations")+
+      ylab("Cell Counts per Liter")+
+      #ylim(0,11000000)+
+      facet_wrap(~Month_Name)+
+      theme_minimal()+
+      theme(axis.title.y=element_text(margin=margin(r=10)))
+```
+
+```{r, out.width="100%", fig.cap = '<i> Cells count of phytoplankton categorized by major groups per month at each sampleing station across Long Island Sound from March and April 2024. </i>'}
+#March - April phytoplankton cell count plot (Figure 8) 
+ggplot(Spring_surface_plankton_data2, aes(x= Station, y= Cell_Count, fill = Species))+
       geom_bar(stat="Identity", position= "stack")+
       ggtitle(paste("Surface Phytoplankton in Long Island Sound, Spring 2024"))+
       xlab("Sample Stations")+
@@ -392,9 +409,9 @@ ggplot(Surface_phytoplankton_plotting_data, aes(x= Month, y= Abundance, fill= Sp
   theme(axis.title.y=element_text(margin=margin(r=10)))
 ```
 
-Aside from Diatoms and Dinoflagellates, other common species groups found in Long Island Sound over the course of 2024 include Cryptophytes, Prasinophytes, and Ochrophytes (Figure 8). While the majority of Cryptophytes, Prasinophytes, and Ochrophytes are autotrophes, there are some species with each group that are considered mixotrophic, where they can switch between autotrophic and heterotrophic states to survive in nutrient poor environments. It is likely these mixotrophic species within each group are responsible for the increase in group relative abundance during the summer months of 2024 (Figure 8).   
+Aside from Diatoms and Dinoflagellates, other common species groups found in Long Island Sound over the course of 2024 include Cryptophytes, Prasinophytes, and Ochrophytes (Figure 7 and 8). While the majority of Cryptophytes, Prasinophytes, and Ochrophytes are autotrophes, there are some species with each group that are considered mixotrophic, where they can switch between autotrophic and heterotrophic states to survive in nutrient poor environments. It is likely these mixotrophic species within each group are responsible for the increase in group relative abundance during the summer months of 2024 (Figure 7 and 8).   
 
-Pictured below are examples of phytoplankton species identified in-house by the Connecticut Department of Energy and Environmental Protection Water Quality Monitoring Team including *Eucampia zodiacus* belonging to the Diatom group (Figure 9.2) and *Dictyocha spp.* (Figure 9.6) falling under the Silicoflagellates group. 
+Pictured below are examples of phytoplankton species identified in-house by the Connecticut Department of Energy and Environmental Protection Water Quality Monitoring Team including *Eucampia zodiacus* belonging to the Diatom group (Figure 10.2) and *Dictyocha spp.* (Figure 10.6) falling under the Silicoflagellates group. 
 
 ```{r, fig.align= "center", out.height= "50%", out.width= "50%", fig.cap = '<i>Phytoplankton found in Long Island Sound 1)Skeletonema spp. 2)Eucampia zodiacus 3)Chaetoceros spp. 4)Nitzschia longissima 5)Thalassionema nitzschioides 6)Dictyocha spp. Identification completed by Connecticut Department of Energy and Environmental Protection Long Island Sound Water monitoring Team. </i>'}
 
@@ -404,7 +421,7 @@ knitr::include_graphics("plankton_figure.png")
 
 </br>
 
-Phytoplankton samples for the 2024 spring survey season were collected by Connecticut’s Department of Energy and Environmental Protection Long Island Sound Water Quality Monitoring Team. Sample processing and species counts/identification are conducted by the [Lin Lab](https://phytoplankton.uconn.edu/) at the University of Connecticut Avery Point. The most common species across all sample locations for the 2024 spring survey season were *Skeletonema spp.*, *Eucampia zodiacus*, and *Guinardia delicatula* (Figure 10).   
+Phytoplankton samples for the 2024 spring survey season were collected by Connecticut’s Department of Energy and Environmental Protection Long Island Sound Water Quality Monitoring Team. Sample processing and species counts/identification are conducted by the [Lin Lab](https://phytoplankton.uconn.edu/) at the University of Connecticut Avery Point. The most common species across all sample locations for the 2024 spring survey season were *Skeletonema spp.*, *Eucampia zodiacus*, and *Guinardia delicatula* (Figure 11).   
 
 </br>
 
@@ -458,7 +475,7 @@ ggplot(species_abundance2024, aes(x = reorder(SampleID, -Avg_Abundance), y = Avg
 
 </br>
 
-The phytoplankton species displayed above (Figure 10) are the ten species with the greatest average abundance from samples collected over the spring 2024 survey season. Out of all phytoplankton species found in Long Island Sound during the spring survey period, *Skeletonema spp.* contributed the most to chlorophyll concentrations observed in collected samples. *Skeletonema spp.* are commonly the most abundant species in estuarine ecosystems as they prefer brackish waters and have a wide range in salinity tolerance (Balzano et al 2011). The broad salinity tolerance of *Skeletonema spp.* make Long Island Sound an ideal location for this species due to the frequent fluctuations in salinity based on season and location within the sound, a factor that inhibits more salinity sensitive species from thriving in the same environment. *Skeletonema spp.* also have the competitive advantage of a resting stage, where this species can survive in the bottom sediment of a waterbody during adverse conditions and resume growth as conditions become more favorable (Gu et al 2012). Spring and autumn blooms of *Skeletonema spp.* are associated with high partial pressure of dissolved carbon dioxide, a leading cause of ocean acidification. Ocean acidification has been shown to alleviate the negative effects of low temperatures and daylight conditions on the growth rate of *Skeletonema costatum*, assisting species growth earlier in the spring season as acidification increases (Li et al 2021). 
+The phytoplankton species displayed above (Figure 11) are the ten species with the greatest average abundance from samples collected over the spring 2024 survey season. Out of all phytoplankton species found in Long Island Sound during the spring survey period, *Skeletonema spp.* contributed the most to chlorophyll concentrations observed in collected samples. *Skeletonema spp.* are commonly the most abundant species in estuarine ecosystems as they prefer brackish waters and have a wide range in salinity tolerance (Balzano et al 2011). The broad salinity tolerance of *Skeletonema spp.* make Long Island Sound an ideal location for this species due to the frequent fluctuations in salinity based on season and location within the sound, a factor that inhibits more salinity sensitive species from thriving in the same environment. *Skeletonema spp.* also have the competitive advantage of a resting stage, where this species can survive in the bottom sediment of a waterbody during adverse conditions and resume growth as conditions become more favorable (Gu et al 2012). Spring and autumn blooms of *Skeletonema spp.* are associated with high partial pressure of dissolved carbon dioxide, a leading cause of ocean acidification. Ocean acidification has been shown to alleviate the negative effects of low temperatures and daylight conditions on the growth rate of *Skeletonema costatum*, assisting species growth earlier in the spring season as acidification increases (Li et al 2021). 
  
 </br>
 
