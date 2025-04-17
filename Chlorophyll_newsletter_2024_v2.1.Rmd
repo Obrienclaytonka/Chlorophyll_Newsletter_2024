@@ -368,7 +368,7 @@ ggplot(Spring_surface_plankton_data, aes(x= Station, y= Cell_Count, fill = Speci
       theme(axis.title.y=element_text(margin=margin(r=10)))
 ```
 
-Although Diatoms dominate the spring season in Long Island Sound, they can often be out competed by other species including Dinoflagellates in the summer months, as show in August in the plot above (Figure 8). This is likely due to the stratification of the water column over the summer months, where Dinoflagellates have the competitive advantage of being autotrophic and heterotrophic, whereas diatoms are primarily autotrophic.  
+Although Diatoms dominate the spring season in Long Island Sound, they can often be out competed by other species including Dinoflagellates in the summer months (Figure 9).  This decline in Diatom species during the summer is likely due to stratification of the water column. Stratification is a common phenomenon where stable layers form within the water column due to differing densities caused by temperature differences, preventing vertical circulation of nutrients, dissolved oxygen, and vertical transport of species like phytoplankton. When trapped in nutrient limited layers with little light penetration, species groups mostly compose of photosynthetic species, like Diatoms, have limited means of survival. However, species groups like Dinoflagellates, where many species have the ability to produce their own food, perform much better in these nutrient limited layers.  
 
 ```{r, out.width="100%", fig.cap = '<i> Surface phytoplankton relative abundance plots per station in Long Island Sound from January to October 2024. </i>'}
 #Reading in Data Frame
