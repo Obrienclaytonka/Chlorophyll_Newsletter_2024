@@ -49,8 +49,9 @@ library(scales)
 library(ggh4x)
 
 
+
 #Chlorophyll Data for Map 
-survey_chlorophyll <- read.csv("LIS2024_spring_chl_sampled.csv",  header = TRUE, na.strings=c("-9999",""))
+survey_chlorophyll <- read.csv("Data/LIS2024_spring_chl_sampled.csv",  header = TRUE, na.strings=c("-9999",""))
 
 chlorophyll_spring_average <- survey_chlorophyll  %>% 
   select(Station.Name, Result, Latitude, Longitude) %>% 
@@ -60,7 +61,7 @@ chlorophyll_spring_average <- survey_chlorophyll  %>%
 
 
 #Station Locations
-DEEP_sample_stations <- read.csv("awX_stations.csv", header = TRUE)
+DEEP_sample_stations <- read.csv("Data/awX_stations.csv", header = TRUE)
 LIS_sample_stations <- DEEP_sample_stations[3100:3116,c(1,2,3,4,5)]
 
 station_coords <- LIS_sample_stations %>% select(WaterbodyName, ylat, xlong) %>% rename(Station.Name = WaterbodyName) 
@@ -102,13 +103,13 @@ The amount, or biomass, of phytoplankton present is important to understanding t
 
 
 <video width="100%" controls>
-  <source src="new_Spring2003_chlorophyll_map.mp4" type="video/mp4">
+  <source src="images/new_Spring2003_chlorophyll_map.mp4" type="video/mp4">
 </video>
 
 </br>
 
 <video width="100%" controls>
-  <source src="new_Spring2024_chlorophyll_map.mp4" type="video/mp4">
+  <source src="images/new_Spring2024_chlorophyll_map.mp4" type="video/mp4">
 </video>
 
 </br>
@@ -119,10 +120,14 @@ Globally, 2003 had more precipitation than previous years, while also being one 
 
 ```{r, out.width="100%", fig.cap = '<i> Spring seasonal averages of chlorophyll-a by year for all of Long Island Sound. A decreasing linear model is displayed in red.  </i>'}
 
+install.packages(plotly)
+
+library (plotly)
+
 #Bar plot of spring chlorophyll average for all of LIS by year 
 #Add trend line
 
-chlorophyll_2003_2024 <- read.csv("2003_2024_chlorophyll.csv", header = TRUE, na.strings = c("", NA, "-999"))
+chlorophyll_2003_2024 <- read.csv("data/2003_2024_chlorophyll.csv", header = TRUE, na.strings = c("", NA, "-999"))
 
 #chlorophyll_2003_2024$Year <- format(as.Date(chlorophyll_2003_2024$Date, format = "%d/%m/%Y"), "%Y")
 
@@ -138,7 +143,7 @@ chlorophyll_2003_2024_spring <- chlorophyll_2003_2024 %>%
   summarize(Average_yearly_chl= mean(Result, na.rm = TRUE)) %>%
   mutate_if(is.numeric,round, 2)
 
-ggplot(chlorophyll_2003_2024_spring, aes(x= Year, y= Average_yearly_chl)) +
+chl_spring23_24 <-ggplot(chlorophyll_2003_2024_spring, aes(x= Year, y= Average_yearly_chl)) +
   geom_bar(stat = "identity", fill = "#0072BC") +
   geom_smooth(aes(group = 1), method = "lm", se= FALSE, color = "red")+ #Can comment out linear model trend line here
   labs(
@@ -149,6 +154,8 @@ ggplot(chlorophyll_2003_2024_spring, aes(x= Year, y= Average_yearly_chl)) +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 #axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggplotly(chl_spring23_24)
 
 ```
 
@@ -165,7 +172,7 @@ The graph below uses data from Sentinel 3 OLCI provided by NOAA CoastWatch (Figu
 #Chlorophyll concentrations are averaged together based on the sample station's location in either the western, central, or eastern basin to achieve one value per basin for each week of the spring survey season. 
 
 #Load Data 
-observed_chl <- read.csv("Weekly_chl_observations_spring2024.csv", header = TRUE, na.strings="-9999")
+observed_chl <- read.csv("data/Weekly_chl_observations_spring2024.csv", header = TRUE, na.strings="-9999")
 
 #Group Data by Station 
 observed_chl_by_basin <- observed_chl %>%
@@ -190,7 +197,7 @@ avg_observed_chl_by_basin_long <- observed_chl_by_basin_long %>%
   summarise(Mean_Chlorophyll = mean(Chlorophyll, na.rm = TRUE), .groups = "drop") 
 
 #Plotting 
-ggplot(avg_observed_chl_by_basin_long, aes (x= Week, y = Mean_Chlorophyll, color =Basin)) + 
+avg_obs_basin_long <- ggplot(avg_observed_chl_by_basin_long, aes (x= Week, y = Mean_Chlorophyll, color =Basin)) + 
   geom_line(size=1) +
   ylim(0,10) +
   labs( 
@@ -203,6 +210,8 @@ ggplot(avg_observed_chl_by_basin_long, aes (x= Week, y = Mean_Chlorophyll, color
     plot.title = element_text(hjust = 0.5, face = "bold"), 
     legend.position = "right")+ 
   theme(axis.title.y= element_text(margin =margin (r=10)))
+
+ggplotly(avg_obs_basin_long)
 ```
 
 To create a time series by basin, the sample stations established by CT DEEP’s Long Island Sound Water Quality Monitoring Program (Figure 1) were divided into three regions. The Western Basin comprises eight stations (09, 15, A4, B3, C1, C2, D3, and E1), the Central Basin comprises five stations (F2, F3, H2, H4, and H6), and the Eastern Basins comprises four stations (I2, J2, K2, and M3). Stations within each of the three basins were then averaged together respectively to create a singular averaged chlorophyll-a value per basin for each week of available satellite data. Broken down by sample station, and averaged across the 2024 sampling season, satellite observed chlorophyll-a concentrations follow similar trends to sampled data, with most observed chlorophyll-a values only within a singular value difference from the sampled chlorophyll concentrations per station (Figure 5).  
@@ -229,7 +238,7 @@ Similar to the averaged chlorophyll concentrations by basin (Figure 3), satellit
 
 ```{r, out.width="100%", fig.cap = '<i> Average satelitte observed chlorophyll-a concentrations versus in situ sampled chlorophyll concentrations per sample station in Long Island Sound across the spring 2024 survey season. </i>'}
 #Load Sampled Data 
-Sampled_monthly_chl <-read.csv("LIS2024_spring_chl_sampled.csv", header=TRUE)
+Sampled_monthly_chl <-read.csv("Data/LIS2024_spring_chl_sampled.csv", header=TRUE)
 
 
 #Average Observed and Sampled Data by Station Respectively 
@@ -285,6 +294,7 @@ ggplot(bar_plot_data, aes(x = interaction(Sttn_Nm, Basin), y = Average, fill = T
   theme_light() + 
   scale_x_discrete(guide = "axis_nested")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
 ```
 
 When compared, in situ sampled chlorophyll concentrations vary slightly from satellite observed concentrations per station (Figure 5). Station A4 shows the most variability between sampled and observed values, likely because this station sees the greatest fluctuations in chlorophyll concentration over the survey season due to its proximity to New York City, and the lack of incoming tidal currents to dilute nutrient input. The differences between sampled and observed values likely stem from the difference in sampling frequency. While satellite observed chlorophyll data was observed daily and averaged over two-week intervals, in situ chlorophyll samples were collected once a month over a three-day period. By comparing data sets with different frequencies of measurements there is a greater chance for discrepancies in the data as seen in the chart above (Figure 5).  
@@ -303,7 +313,7 @@ Below, different phytoplankton species collected over the spring 2003 survey sea
 
 ```{r,fig.cap = '<i> Phytoplankton abundance per sample station in Long Island Sound during the Spring 2024 sampling season. </i>'}
 #Load Data
-Plankton <- read.csv("Phytoplankton_average_abundance_Jan_Apr.csv", header = TRUE, na.strings = "")
+Plankton <- read.csv("Data/Phytoplankton_average_abundance_Jan_Apr.csv", header = TRUE, na.strings = "")
 
 #Mapping
 Plankton_map <- leaflet(width="100%") %>%
@@ -330,7 +340,7 @@ The phytoplankton community in Long Island Sound is composed mostly of Diatoms (
 options(scipen = 999)
 
 #Reading Data 
-cell_count_surface_phytoplankton <- read.csv("surface_cell_count_phytoplankton.csv", header = FALSE, na.strings= c("", NA))
+cell_count_surface_phytoplankton <- read.csv("Data/surface_cell_count_phytoplankton.csv", header = FALSE, na.strings= c("", NA))
 
 #A4, All Months, Surface Vs Bottom 
 Stations <- cell_count_surface_phytoplankton[1,-1] #1st row is stations names, mins first column
@@ -383,7 +393,7 @@ Although Diatoms dominate the spring season in Long Island Sound, they can often
 
 ```{r, out.width="100%", fig.cap = '<i> Surface phytoplankton relative abundance plots per station in Long Island Sound from January to October 2024. </i>'}
 #Reading in Data Frame
-surface_phytoplankton <- read.csv("surface_phytoplankton_rel_abund_2024_no_nanoplankton.csv", header= TRUE, na.strings= c("", NA))
+surface_phytoplankton <- read.csv("Data/surface_phytoplankton_rel_abund_2024_no_nanoplankton.csv", header= TRUE, na.strings= c("", NA))
 
 #Transforming Data to "Long" for Plotting
 surface_phytoplankton_long <- gather(surface_phytoplankton, Species, Abundance, Diatom:Small_Flagellates)
@@ -393,7 +403,7 @@ Surface_phytoplankton_plotting_data <- surface_phytoplankton_long %>% mutate(Spe
 Surface_phytoplankton_plotting_data$Month <- factor(Surface_phytoplankton_plotting_data$Month, levels= month.abb)
 
 #Plotting 
-ggplot(Surface_phytoplankton_plotting_data, aes(x= Month, y= Abundance, fill= Species)) +
+Surf_plank_2024 <- ggplot(Surface_phytoplankton_plotting_data, aes(x= Month, y= Abundance, fill= Species)) +
   geom_bar(stat= "Identity")+ 
   #scale_x_discrete(limits= month.abb)+
   xlab("Survey Month") +
@@ -401,6 +411,8 @@ ggplot(Surface_phytoplankton_plotting_data, aes(x= Month, y= Abundance, fill= Sp
   ggtitle("Relative Abundance of Surface Phytoplankton in LIS, Jan-Oct 2024")+
   theme_minimal()+
   theme(axis.title.y=element_text(margin=margin(r=10)))
+
+ggplotly (Surf_plank_2024)
 ```
 
 Aside from Diatoms and Dinoflagellates, other common species groups found in Long Island Sound over the course of 2024 include Cryptophytes, Prasinophytes, and Ochrophytes (Figure 8). While the majority of Cryptophytes, Prasinophytes, and Ochrophytes are autotrophes, there are some species with each group that are considered mixotrophic, meaning they can switch between autotrophic and heterotrophic states to survive in nutrient poor environments. It is likely these mixotrophic species within each group are responsible for the increase in group relative abundance during the summer months of 2024 (Figure 8).   
@@ -424,7 +436,7 @@ The most common species across all sample locations for the 2024 spring survey s
 #Prevents Scientific Notation 
 options(scipen = 999)
 
-plankton_raw_table <- read.csv("plankton_abundance2024.csv", header= TRUE, na.strings= c("-999", "NA", "-"))
+plankton_raw_table <- read.csv("Data/plankton_abundance2024.csv", header= TRUE, na.strings= c("-999", "NA", "-"))
 
 #Cleaning Data (Removing and merging certain rows)
 #Removing Rows 
@@ -465,6 +477,8 @@ ggplot(species_abundance2024, aes(x = reorder(SampleID, -Avg_Abundance), y = Avg
   labs(title= "Phytoplankton Species Abundance in Long Island Sound, Feb-Apr 2024", x = "Phytoplankton Species 2024", y="Average Cell Abundance") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
 ```
 
 </br>
