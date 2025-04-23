@@ -308,7 +308,9 @@ Phytoplankton are critical to the health of marine ecosystems. As autotrophic or
 
 Phytoplankton samples are collected at 10 stations across the Sound by CTDEEP. Sample processing and species counts/identification are conducted by the [Lin Lab](https://phytoplankton.uconn.edu/) at the University of Connecticut Avery Point.
 
-Below, different phytoplankton species collected over the spring 2003 survey season from different sample stations across Long Island Sound are displayed. Click each station to view each species. 
+
+The interactive map below shows phytoplankton abundance by station across Long Island Sound. Samples were collected between late January and early April 2024 to summarize the 2024 spring survey season.  Click each station to view counts (cells per liter). 
+ 
 
 ```{r,fig.cap = '<i> Phytoplankton abundance per sample station in Long Island Sound during the Spring 2024 sampling season. </i>'}
 #Load Data
@@ -332,14 +334,14 @@ Plankton_map <- leaflet(width="100%") %>%
 Plankton_map
 ```
 
-The phytoplankton community in Long Island Sound is composed mostly of Diatoms (Figure 7). Diatoms, one of the major species groups of phytoplankton, are silica-based microalgae that can be found in marine, freshwater, and even within the soils of terrestrial ecosystems. This particular species of algae commonly dominates estuarine ecosystems, like Long Island Sound, due to their wide range in salinity tolerance, ability to use silica which is often abundant in these ecosystems, and the high nutrient availability of estuaries.  
+The phytoplankton community in Long Island Sound is composed mostly of Diatoms (Figures 7 and 8). Diatoms, one of the major species groups of phytoplankton, are silica-based microalgae that can be found in marine, freshwater, and even within the soils of terrestrial ecosystems. This particular species of algae commonly dominates estuarine ecosystems, like Long Island Sound, due to their wide range in salinity tolerance, ability to use silica which is often abundant in these ecosystems, and the high nutrient availability of estuaries.  
 
-```{r, out.width="100%", fig.cap = '<i> Cells count of phytoplankton categorized by major groups per month at each sampleing station across Long Island Sound from January to April 2024. </i>'}
+```{r, out.width="100%", fig.cap = '<i> Cell counts of phytoplankton categorized by major groups per month at each sampleing station across Long Island Sound from January and February 2024. </i>'}
 #Prevents Scientific Notation 
 options(scipen = 999)
 
 #Reading Data 
-cell_count_surface_phytoplankton <- read.csv("Data/surface_cell_count_phytoplankton.csv", header = FALSE, na.strings= c("", NA))
+cell_count_surface_phytoplankton <- read.csv("data/surface_cell_count_phytoplankton.csv", header = FALSE, na.strings= c("", NA))
 
 #A4, All Months, Surface Vs Bottom 
 Stations <- cell_count_surface_phytoplankton[1,-1] #1st row is stations names, mins first column
@@ -362,13 +364,17 @@ months_list <- unique(surface_cell_count_phytoplankton_long$Month)
   #filter(Month == c("Jan", "Feb", "Mar", "Apr"))
 
 #Vector of Spring Months 
-spr_m <- c("Jan", "Feb", "Mar", "Apr")
+spr_m1 <- c("Jan", "Feb")
+spr_m2 <- c("Mar", "Apr")
 
-Spring_surface_plankton_data <- surface_cell_count_phytoplankton_long[surface_cell_count_phytoplankton_long$Month %in% spr_m,]
+Spring_surface_plankton_data1 <- surface_cell_count_phytoplankton_long[surface_cell_count_phytoplankton_long$Month %in% spr_m1,]
+Spring_surface_plankton_data1$Month_Name <- factor(Spring_surface_plankton_data1$Month, levels = month.abb, labels = month.name)
 
-Spring_surface_plankton_data$Month_Name <- factor(Spring_surface_plankton_data$Month, levels = month.abb, labels = month.name)
+Spring_surface_plankton_data2 <- surface_cell_count_phytoplankton_long[surface_cell_count_phytoplankton_long$Month %in% spr_m2,]
+Spring_surface_plankton_data2$Month_Name <- factor(Spring_surface_plankton_data2$Month, levels = month.abb, labels = month.name)
 
-ggplot(Spring_surface_plankton_data, aes(x= Station, y= Cell_Count, fill = Species))+
+#Jan-Feb Plot (Figure 7)
+ Jan_Feb <- ggplot(Spring_surface_plankton_data1, aes(x= Station, y= Cell_Count, fill = Species))+
       geom_bar(stat="Identity", position= "stack")+
       ggtitle(paste("Surface Phytoplankton in Long Island Sound, Spring 2024"))+
       xlab("Sample Stations")+
@@ -377,18 +383,27 @@ ggplot(Spring_surface_plankton_data, aes(x= Station, y= Cell_Count, fill = Speci
       facet_wrap(~Month_Name)+
       theme_minimal()+
       theme(axis.title.y=element_text(margin=margin(r=10)))
- 
-#Cowplot code
-#plot_no_legend <- lapply(spring_plots, function(x) x + theme(legend.position = "none"))
-#legend <- cowplot::get_legend(spring_plots[[1]] + theme(legened.position = "bottom"))
-#title <- cowplot::ggdraw() + cowplot::draw_label("Sruface Phytoplankton in Long Island Sound, Spring 2024", fontface = "bold")
-#plot_grid <- cowplot::plot_grid(plotlist = plot_no_legend, ncol = 2)
-#cowplot::plot_grid(title, plot_grid, ncol=1, rel_heights = c(0.1, 1, 0.2))
 
-#Facet_wrap only displays a couple bar per graph, grid.arrange() was too squished because of legends, cow_plot code is supposed to move the legend to the bottom to give plots more room but isn't working (coming back to this)
+ggplotly (Jan_Feb)
 ```
 
-Although Diatoms dominate the spring season in Long Island Sound, they can often be out competed by other species including Dinoflagellates in the summer months, as shown in August in the plot above (Figure 8). This is likely due to the stratification of the water column over the summer months, where Dinoflagellates have the competitive advantage of being autotrophic and heterotrophic, whereas diatoms are primarily autotrophic.  
+```{r, out.width="100%", fig.cap = '<i> Cell counts of phytoplankton categorized by major groups per month at each sampleing station across Long Island Sound from March and April 2024. </i>'}
+#March - April phytoplankton cell count plot (Figure 8) 
+Mar_Apr <- ggplot(Spring_surface_plankton_data2, aes(x= Station, y= Cell_Count, fill = Species))+
+      geom_bar(stat="Identity", position= "stack")+
+      ggtitle(paste("Surface Phytoplankton in Long Island Sound, Spring 2024"))+
+      xlab("Sample Stations")+
+      ylab("Cell Counts per Liter")+
+      #ylim(0,11000000)+
+      facet_wrap(~Month_Name)+
+      theme_minimal()+
+      theme(axis.title.y=element_text(margin=margin(r=10)))
+
+ggplotly (Mar_Apr)
+```
+<br>
+
+Although Diatoms dominate the spring phytoplankton assemblage in Long Island Sound, they can often be out competed by other species including Dinoflagellates in the summer months, as shown in August in the plot below (Figure 9). This may be due in part to the stratification of the water column over the summer months which can trap phytoplankton at different depths with varying degrees of nutrient availability and light penetration. Dinoflagellates have the competitive advantage of being both autotrophic and heterotrophic, meaning they are able to absorb organic matter or engulf prey in addition to photosynthesizing. Diatoms are primarily autotrophic and rely on photosynthesis for nutrition.  
 
 ```{r, out.width="100%", fig.cap = '<i> Surface phytoplankton relative abundance plots per station in Long Island Sound from January to October 2024. </i>'}
 #Reading in Data Frame
@@ -414,9 +429,9 @@ Surf_plank_2024 <- ggplot(Surface_phytoplankton_plotting_data, aes(x= Month, y= 
 ggplotly (Surf_plank_2024)
 ```
 
-Aside from Diatoms and Dinoflagellates, other common species groups found in Long Island Sound over the course of 2024 include Cryptophytes, Prasinophytes, and Ochrophytes (Figure 8). While the majority of Cryptophytes, Prasinophytes, and Ochrophytes are autotrophes, there are some species with each group that are considered mixotrophic, meaning they can switch between autotrophic and heterotrophic states to survive in nutrient poor environments. It is likely these mixotrophic species within each group are responsible for the increase in group relative abundance during the summer months of 2024 (Figure 8).   
+Aside from Diatoms and Dinoflagellates, other common species groups found in Long Island Sound over the course of 2024 included Cryptophytes, Prasinophytes, and Ochrophytes (Figure 8). While the majority of Cryptophytes, Prasinophytes, and Ochrophytes are autotrophes, there are some species with each group that are considered mixotrophic, meaning they can switch between autotrophic and heterotrophic states to survive in nutrient poor environments. It is likely these mixotrophic species within each group are responsible for the increase in group relative abundance during the summer months of 2024 (Figure 10).   
 
-Pictured below are examples of phytoplankton species identified in-house by the Connecticut Department of Energy and Environmental Protection Water Quality Monitoring Team including *Eucampia zodiacus* belonging to the Diatom group (Figure 9.2) and *Dictyocha spp.* (Figure 9.6) falling under the Silicoflagellates group. 
+Pictured below are examples of phytoplankton species identified in-house by the Connecticut Department of Energy and Environmental Protection Water Quality Monitoring Team including *Eucampia zodiacus* belonging to the Diatom group (Figure 10.2) and *Dictyocha spp.* (Figure 10.6) falling under the Silicoflagellates group. 
 
 ```{r, fig.align= "center", out.height= "50%", out.width= "50%", fig.cap = '<i>Phytoplankton found in Long Island Sound 1)Skeletonema spp. 2)Eucampia zodiacus 3)Chaetoceros spp. 4)Nitzschia longissima 5)Thalassionema nitzschioides 6)Dictyocha spp. Identification completed by Connecticut Department of Energy and Environmental Protection Long Island Sound Water Monitoring Team. </i>'}
 
@@ -426,7 +441,7 @@ knitr::include_graphics("images/plankton_figure.png")
 
 </br>
 
-The most common species across all sample locations for the 2024 spring survey season were *Skeletonema spp.*, *Eucampia zodiacus*, and *Guinardia delicatula* (Figure 10).   
+The most common species across all sample locations for the 2024 spring survey season were *Skeletonema spp.*, *Eucampia zodiacus*, and *Guinardia delicatula* (Figure 11).   
 
 </br>
 
@@ -473,7 +488,7 @@ species_abundance2024 <- plankton_raw_table %>%
 ggplot(species_abundance2024, aes(x = reorder(SampleID, -Avg_Abundance), y = Avg_Abundance)) +
   geom_bar(stat = "identity", fill = "#00AAE7") + #Brand standard color "Clear Blue"
   ylim(0, 1200000) +
-  labs(title= "Phytoplankton Species Abundance in Long Island Sound, Feb-Apr 2024", x = "Phytoplankton Species 2024", y="Average Cell Abundance") +
+  labs(title= "Phytoplankton Species Abundance in Long Island Sound, Jan-Apr 2024", x = "Phytoplankton Species 2024", y="Average Cell Abundance") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
@@ -482,7 +497,7 @@ ggplot(species_abundance2024, aes(x = reorder(SampleID, -Avg_Abundance), y = Avg
 
 </br>
 
-The phytoplankton species displayed above (Figure 10) are the ten species with the greatest average abundance from samples collected over the spring 2024 survey season. Out of all phytoplankton species found in Long Island Sound during the spring survey period, *Skeletonema spp.* contributed the most to chlorophyll concentrations observed in collected samples. *Skeletonema spp.* are commonly the most abundant species in estuarine ecosystems as they prefer brackish waters and have a wide range in salinity tolerance (Balzano et al 2011). The broad salinity tolerance of *Skeletonema spp.* make Long Island Sound an ideal location for this species due to the frequent fluctuations in salinity based on season and location within the sound, a factor that inhibits more salinity sensitive species from thriving in the same environment. *Skeletonema spp.* also have the competitive advantage of a resting stage, where this species can survive in the bottom sediment of a waterbody during adverse conditions and resume growth as conditions become more favorable (Gu et al 2012). Spring and autumn blooms of *Skeletonema spp.* are associated with high partial pressure of dissolved carbon dioxide, a leading cause of ocean acidification. Ocean acidification has been shown to alleviate the negative effects of low temperatures and daylight conditions on the growth rate of *Skeletonema costatum*, assisting species growth earlier in the spring season as acidification increases (Li et al 2021). 
+The phytoplankton species displayed above (Figure 11) are the ten species with the greatest average abundance from samples collected over the spring 2024 survey season. Out of all phytoplankton species found in Long Island Sound during the spring survey period, *Skeletonema spp.* contributed the most to chlorophyll concentrations observed in collected samples. *Skeletonema spp.* are commonly the most abundant species in estuarine ecosystems as they prefer brackish waters and have a wide range in salinity tolerance (Balzano et al 2011). The broad salinity tolerance of *Skeletonema spp.* make Long Island Sound an ideal location for this species due to the frequent fluctuations in salinity based on season and location within the sound, a factor that inhibits more salinity sensitive species from thriving in the same environment. *Skeletonema spp.* also have the competitive advantage of a resting stage, where this species can survive in the bottom sediment of a waterbody during adverse conditions and resume growth as conditions become more favorable (Gu et al 2012). Spring and autumn blooms of *Skeletonema spp.* are associated with high partial pressure of dissolved carbon dioxide, a leading cause of ocean acidification. Ocean acidification has been shown to alleviate the negative effects of low temperatures and daylight conditions on the growth rate of *Skeletonema costatum*, assisting species growth earlier in the spring season as acidification increases (Li et al 2021). 
  
 </br>
 
@@ -510,7 +525,7 @@ Phytoplankton communities are important to maintaining the ecosystem health of L
 
 <!-- [**Interstate Environmental Commision**](https://www.iec-nynjct.org/programs/water/sound-monitoring) -->
 
-<a href="https://longislandsoundstudy.net/"><img src = "liss-logo.png"  alt = "LISS Logo" width="110" height="100"></a>
+<a href="https://longislandsoundstudy.net/"><img src = "images/liss-logo.png"  alt = "LISS Logo" width="110" height="100"></a>
 
 <!-- [**Long Island Sound Study**](https://longislandsoundstudy.net/) -->
 
