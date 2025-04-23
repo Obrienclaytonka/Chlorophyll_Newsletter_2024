@@ -53,7 +53,7 @@
     position: relative;
     margin-bottom: 2em;
     /* liner gradient tints the image darker for readability*/
-    background-image: linear-gradient( rgba(0,0,0,.2), rgba(0,0,0,.2) ), url(Old_lyme_deep.png); 
+    background-image: linear-gradient( rgba(0,0,0,.2), rgba(0,0,0,.2) ), url(images/Old_lyme_deep.png); 
     height: 400px;
     background-size: cover;
     background-color: #141c25f2;
