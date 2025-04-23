@@ -138,18 +138,19 @@ chlorophyll_2003_2024_spring <- chlorophyll_2003_2024 %>%
   summarize(Average_yearly_chl= mean(Result, na.rm = TRUE)) %>%
   mutate_if(is.numeric,round, 2)
 
-ggplot(chlorophyll_2003_2024_spring, aes(x= Year, y= Average_yearly_chl)) +
+annual_chl <- ggplot(chlorophyll_2003_2024_spring, aes(x= Year, y= Average_Chlorophyll)) +
   geom_bar(stat = "identity", fill = "#0072BC") +
   geom_smooth(aes(group = 1), method = "lm", se= FALSE, color = "red")+ #Can comment out linear model trend line here
   labs(
     title = "Spring Seasonal Average Chlorophyll-a by Year Across LIS, 2003-2024",
     x = "Year",
-    y = "Average Chlorophyll-a (mg/m³)")+
+    y = "Average Chlorophyll-a (ppb)")+
   ylim(0,12)+
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 #axis.text.x = element_text(angle = 45, hjust = 1))
 
+ggplotly(annual_chl, tooltip = c("Average_Chlorophyll"), fig.align = "center")
 ```
 
 <hr>
@@ -190,7 +191,7 @@ avg_observed_chl_by_basin_long <- observed_chl_by_basin_long %>%
   summarise(Mean_Chlorophyll = mean(Chlorophyll, na.rm = TRUE), .groups = "drop") 
 
 #Plotting 
-ggplot(avg_observed_chl_by_basin_long, aes (x= Week, y = Mean_Chlorophyll, color =Basin)) + 
+basin_line_plot <- ggplot(avg_observed_chl_by_basin_long, aes (x= Week, y = Mean_Chlorophyll, color =Basin)) + 
   geom_line(size=1) +
   ylim(0,10) +
   labs( 
@@ -203,6 +204,8 @@ ggplot(avg_observed_chl_by_basin_long, aes (x= Week, y = Mean_Chlorophyll, color
     plot.title = element_text(hjust = 0.5, face = "bold"), 
     legend.position = "right")+ 
   theme(axis.title.y= element_text(margin =margin (r=10)))
+
+ggplotly(basin_line_plot, tooltip = c("Mean_Chlorophyll"), fig.align = "center")
 ```
 
 To create a time series by basin, the sample stations established by CT DEEP’s Long Island Sound Water Quality Monitoring Team (Figure 1) were divided into three regions: sections of western, central, and eastern basins. The western basin comprises eight stations (09,15, A4, B3, C1, C2, D3, and E1), the central basin comprises five stations (F2, F3, H2, H4, and H6), and the eastern basins comprises four stations (I2, J2, K2, and M3). Stations within each of the three basins were then averaged together respectively to create a singular averaged chlorophyll-a value per basin for each week of available satellite data. Broken down by sample station, and averaged across the 2024 sampling season, satellite observed chlorophyll-a concentrations follow similar trends to sampled data, with most observed chlorophyll-a values only within a singular value difference from the sampled chlorophyll concentrations per station (Figure 5).  
@@ -210,8 +213,7 @@ To create a time series by basin, the sample stations established by CT DEEP’s
 Between January and May 2024, satellite imagery observed higher chlorophyll-a concentrations in the western basin of Long Island Sound than either the eastern or central basins, with the exception of one week in late January where the central basin had observed slightly higher values than the western basin (Figure 3). These observations are consistent with sample data collected by CT DEEP’s Long Island Sound Water Quality Monitoring Team for the spring 2024 season. In both the sampled and satellite observed data, the western basin of Long Island Sound is identified as a higher probability area for algal blooms. 
 
 ```{r, out.width="100%", fig.cap = '<i> Satellite observed chlorphyll-a concentrations by station in Long Island Sound during the spring 2024 survey season. </i>'}
-
-ggplot(observed_chl_by_basin_long, aes(x = Week, y = Chlorophyll)) +
+station_line_plots <- ggplot(observed_chl_by_basin_long, aes(x = Week, y = Chlorophyll)) +
   geom_line(size = 1, alpha = 0.7, color = "#0D2D6c") + 
   facet_wrap(~ Sttn_Nm, scales = "fixed") + 
   labs(
@@ -221,6 +223,8 @@ ggplot(observed_chl_by_basin_long, aes(x = Week, y = Chlorophyll)) +
   ) +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"), axis.title.y= element_text(margin =margin (r=10)))
+
+ggplotly(station_line_plots, tooltip = c("Chlorophyll"), fig.align = "center") #Seems to cut off y-axis label when made into an interactive graph, unsure why or how to fix
 ```
 
 Similar to the averaged chlorophyll concentrations by basin (Figure 3), satellite observed chlorophyll separated by station (Figure 4) also displays an increase in concentrations during the month of February for most individual stations. These satellite observations are corroborated with in situ data which also shows higher chlorophyll concentrations in Long Island Sound during the month of February, particularly in the western and central basins as shown in the previous 2024 spatial interpolation animation video.  
@@ -351,13 +355,30 @@ months_list <- unique(surface_cell_count_phytoplankton_long$Month)
   #filter(Month == c("Jan", "Feb", "Mar", "Apr"))
 
 #Vector of Spring Months 
-spr_m <- c("Jan", "Feb", "Mar", "Apr")
+spr_m1 <- c("Jan", "Feb")
+spr_m2 <- c("Mar", "Apr")
 
-Spring_surface_plankton_data <- surface_cell_count_phytoplankton_long[surface_cell_count_phytoplankton_long$Month %in% spr_m,]
+Spring_surface_plankton_data1 <- surface_cell_count_phytoplankton_long[surface_cell_count_phytoplankton_long$Month %in% spr_m1,]
+Spring_surface_plankton_data1$Month_Name <- factor(Spring_surface_plankton_data1$Month, levels = month.abb, labels = month.name)
 
-Spring_surface_plankton_data$Month_Name <- factor(Spring_surface_plankton_data$Month, levels = month.abb, labels = month.name)
+Spring_surface_plankton_data2 <- surface_cell_count_phytoplankton_long[surface_cell_count_phytoplankton_long$Month %in% spr_m2,]
+Spring_surface_plankton_data2$Month_Name <- factor(Spring_surface_plankton_data2$Month, levels = month.abb, labels = month.name)
 
-ggplot(Spring_surface_plankton_data, aes(x= Station, y= Cell_Count, fill = Species))+
+#Jan-Feb Plot (Figure 7)
+ggplot(Spring_surface_plankton_data1, aes(x= Station, y= Cell_Count, fill = Species))+
+      geom_bar(stat="Identity", position= "stack")+
+      ggtitle(paste("Surface Phytoplankton in Long Island Sound, Spring 2024"))+
+      xlab("Sample Stations")+
+      ylab("Cell Counts per Liter")+
+      #ylim(0,11000000)+
+      facet_wrap(~Month_Name)+
+      theme_minimal()+
+      theme(axis.title.y=element_text(margin=margin(r=10)))
+```
+
+```{r, out.width="100%", fig.cap = '<i> Cells count of phytoplankton categorized by major groups per month at each sampleing station across Long Island Sound from March and April 2024. </i>'}
+#March - April phytoplankton cell count plot (Figure 8) 
+ggplot(Spring_surface_plankton_data2, aes(x= Station, y= Cell_Count, fill = Species))+
       geom_bar(stat="Identity", position= "stack")+
       ggtitle(paste("Surface Phytoplankton in Long Island Sound, Spring 2024"))+
       xlab("Sample Stations")+
@@ -392,9 +413,9 @@ ggplot(Surface_phytoplankton_plotting_data, aes(x= Month, y= Abundance, fill= Sp
   theme(axis.title.y=element_text(margin=margin(r=10)))
 ```
 
-Aside from Diatoms and Dinoflagellates, other common species groups found in Long Island Sound over the course of 2024 include Cryptophytes, Prasinophytes, and Ochrophytes (Figure 8). While the majority of Cryptophytes, Prasinophytes, and Ochrophytes are autotrophes, there are some species with each group that are considered mixotrophic, where they can switch between autotrophic and heterotrophic states to survive in nutrient poor environments. It is likely these mixotrophic species within each group are responsible for the increase in group relative abundance during the summer months of 2024 (Figure 8).   
+Aside from Diatoms and Dinoflagellates, other common species groups found in Long Island Sound over the course of 2024 include Cryptophytes, Prasinophytes, and Ochrophytes (Figure 7 and 8). While the majority of Cryptophytes, Prasinophytes, and Ochrophytes are autotrophes, there are some species with each group that are considered mixotrophic, where they can switch between autotrophic and heterotrophic states to survive in nutrient poor environments. It is likely these mixotrophic species within each group are responsible for the increase in group relative abundance during the summer months of 2024 (Figure 7 and 8).   
 
-Pictured below are examples of phytoplankton species identified in-house by the Connecticut Department of Energy and Environmental Protection Water Quality Monitoring Team including *Eucampia zodiacus* belonging to the Diatom group (Figure 9.2) and *Dictyocha spp.* (Figure 9.6) falling under the Silicoflagellates group. 
+Pictured below are examples of phytoplankton species identified in-house by the Connecticut Department of Energy and Environmental Protection Water Quality Monitoring Team including *Eucampia zodiacus* belonging to the Diatom group (Figure 10.2) and *Dictyocha spp.* (Figure 10.6) falling under the Silicoflagellates group. 
 
 ```{r, fig.align= "center", out.height= "50%", out.width= "50%", fig.cap = '<i>Phytoplankton found in Long Island Sound 1)Skeletonema spp. 2)Eucampia zodiacus 3)Chaetoceros spp. 4)Nitzschia longissima 5)Thalassionema nitzschioides 6)Dictyocha spp. Identification completed by Connecticut Department of Energy and Environmental Protection Long Island Sound Water monitoring Team. </i>'}
 
@@ -404,7 +425,7 @@ knitr::include_graphics("plankton_figure.png")
 
 </br>
 
-Phytoplankton samples for the 2024 spring survey season were collected by Connecticut’s Department of Energy and Environmental Protection Long Island Sound Water Quality Monitoring Team. Sample processing and species counts/identification are conducted by the [Lin Lab](https://phytoplankton.uconn.edu/) at the University of Connecticut Avery Point. The most common species across all sample locations for the 2024 spring survey season were *Skeletonema spp.*, *Eucampia zodiacus*, and *Guinardia delicatula* (Figure 10).   
+Phytoplankton samples for the 2024 spring survey season were collected by Connecticut’s Department of Energy and Environmental Protection Long Island Sound Water Quality Monitoring Team. Sample processing and species counts/identification are conducted by the [Lin Lab](https://phytoplankton.uconn.edu/) at the University of Connecticut Avery Point. The most common bloom species across all sample locations for the 2024 spring survey season were *Skeletonema spp.*, *Guinardia delicatula*, and *Thalassionema nitzschiodes* (Figure 11).   
 
 </br>
 
@@ -413,52 +434,21 @@ Phytoplankton samples for the 2024 spring survey season were collected by Connec
 #Prevents Scientific Notation 
 options(scipen = 999)
 
-plankton_raw_table <- read.csv("plankton_abundance2024.csv", header= TRUE, na.strings= c("-999", "NA", "-"))
+plankton_raw_table <- read.csv("Phytoplankton_species_plot2024.csv", header= TRUE, na.strings= c("-999", "NA", "-"))
 
-#Cleaning Data (Removing and merging certain rows)
-#Removing Rows 
-#plankton_raw_table <- plankton_raw_table[-c(221,222), ]
+#Plotting 
+plankton_species_plot <- ggplot(plankton_raw_table, aes(x= reorder(Species, -Average_Abundance), y = Average_Abundance))+
+  geom_bar(stat = "identity", fill = "#00AAE7")+
+  labs(title = "Phytoplankton Bloom Species in Long Island Sound, Jan - Apr 2024", x= "Phytoplankton Bloom Species in LIS", y= "Average Abundance (Cell Count/Liter)")+
+  theme_minimal()+
+  theme(axis.text = element_text(angle = 45, hjust = 1))
 
-#Average plankton counts 
-averaged_plankton_table <- plankton_raw_table %>%
-  rowwise() %>%
-  mutate(
-    A4_avg = mean(c_across(starts_with("A4")), na.rm = TRUE),
-    B3_avg = mean(c_across(starts_with("B3")), na.rm = TRUE),
-    C1_avg = mean(c_across(starts_with("C1")), na.rm = TRUE),
-    D3_avg = mean(c_across(starts_with("D3")), na.rm = TRUE),
-    E1_avg = mean(c_across(starts_with("E1")), na.rm = TRUE),
-    F2_avg = mean(c_across(starts_with("F2")), na.rm = TRUE),
-    H4_avg = mean(c_across(starts_with("H4")), na.rm = TRUE),
-    I2_avg = mean(c_across(starts_with("I2")), na.rm = TRUE),
-    J2_avg = mean(c_across(starts_with("J2")), na.rm = TRUE),
-    K2_avg = mean(c_across(starts_with("K2")), na.rm = TRUE)
-  ) %>%
-  ungroup()
-
-
-#Calculate average abundance across all columns, exclude species with no data
-species_abundance2024 <- plankton_raw_table %>%
-  rowwise() %>%
-  mutate(Avg_Abundance = mean(c_across(-SampleID), na.rm = TRUE)) %>%
-  ungroup() %>%
-  filter(!is.na(Avg_Abundance)) %>%  #Filters out species with no data
-  arrange(desc(Avg_Abundance)) %>%
-  slice_head(n = 10) #Filters for the top 10 greatest
-
-
-#Plotting
-ggplot(species_abundance2024, aes(x = reorder(SampleID, -Avg_Abundance), y = Avg_Abundance)) +
-  geom_bar(stat = "identity", fill = "#00AAE7") + #Brand standard color "Clear Blue"
-  ylim(0, 1200000) +
-  labs(title= "Phytoplankton Species Abundance in Long Island Sound, Feb-Apr 2024", x = "Phytoplankton Species 2024", y="Average Cell Abundance") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ggplotly(plankton_species_plot, tooltip = c("Average_Abundance"), fig.align = "center")
 ```
 
 </br>
 
-The phytoplankton species displayed above (Figure 10) are the ten species with the greatest average abundance from samples collected over the spring 2024 survey season. Out of all phytoplankton species found in Long Island Sound during the spring survey period, *Skeletonema spp.* contributed the most to chlorophyll concentrations observed in collected samples. *Skeletonema spp.* are commonly the most abundant species in estuarine ecosystems as they prefer brackish waters and have a wide range in salinity tolerance (Balzano et al 2011). The broad salinity tolerance of *Skeletonema spp.* make Long Island Sound an ideal location for this species due to the frequent fluctuations in salinity based on season and location within the sound, a factor that inhibits more salinity sensitive species from thriving in the same environment. *Skeletonema spp.* also have the competitive advantage of a resting stage, where this species can survive in the bottom sediment of a waterbody during adverse conditions and resume growth as conditions become more favorable (Gu et al 2012). Spring and autumn blooms of *Skeletonema spp.* are associated with high partial pressure of dissolved carbon dioxide, a leading cause of ocean acidification. Ocean acidification has been shown to alleviate the negative effects of low temperatures and daylight conditions on the growth rate of *Skeletonema costatum*, assisting species growth earlier in the spring season as acidification increases (Li et al 2021). 
+The phytoplankton species displayed above (Figure 11) are the most common bloom species found in Long Island Sound ordered by average abundance from samples collected over the spring 2024 survey season. Out of all phytoplankton species found in Long Island Sound during the spring survey period, *Skeletonema spp.* contributed the most to chlorophyll concentrations observed in collected samples. *Skeletonema spp.* are commonly the most abundant species in estuarine ecosystems as they prefer brackish waters and have a wide range in salinity tolerance (Balzano et al 2011). The broad salinity tolerance of *Skeletonema spp.* make Long Island Sound an ideal location for this species due to the frequent fluctuations in salinity based on season and location within the sound, a factor that inhibits more salinity sensitive species from thriving in the same environment. *Skeletonema spp.* also have the competitive advantage of a resting stage, where this species can survive in the bottom sediment of a waterbody during adverse conditions and resume growth as conditions become more favorable (Gu et al 2012). Spring and autumn blooms of *Skeletonema spp.* are associated with high partial pressure of dissolved carbon dioxide, a leading cause of ocean acidification. Ocean acidification has been shown to alleviate the negative effects of low temperatures and daylight conditions on the growth rate of *Skeletonema costatum*, assisting species growth earlier in the spring season as acidification increases (Li et al 2021). 
  
 </br>
 
