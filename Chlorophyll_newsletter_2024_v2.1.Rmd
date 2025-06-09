@@ -28,13 +28,13 @@ options(repos = list(CRAN = "http://cran/rstudio.com/"))
 ## **Background** 
 <hr>
 
-Phytoplankton are photosynthetic organisms that live within the water column. These microscopic organisms are primary producers in the aquatic food chain, making them a keystone species in both freshwater and marine ecosystems. They play a critical role in aquatic habitats by fixing carbon dioxide and producing organic materials that larger organisms in the food chain consume. in large abundance.  However, too much phytoplankton in the water can indicate eutrophication, the process caused by nutrient over-enrichment. Large populations of phytoplankton are referred to as blooming events or algal blooms. The die-off of phytoplankton within large scale blooms depletes a water body of dissolved oxygen, stunting the survivability of aquatic species within that ecosystem. Certain species of phytoplankton also produce harmful toxins, such as dinoflagellates which cause red tide events. Eutrophication, the excess input of nutrients through human sources to a water body, is the primary contributor to algal blooming events. Contributors to eutrophication in nearshore waters are typically in the form of wastewater from sewage treatment plants, as well as excess fertilizer and agricultural runoff. 
+Phytoplankton are photosynthetic organisms that live within the water column. These microscopic organisms are primary producers in the aquatic food chain, making them a keystone species in both freshwater and marine ecosystems. They play a critical role in aquatic habitats by fixing carbon dioxide and producing organic materials that larger organisms in the food chain consume in large abundance.  However, too much phytoplankton in the water can indicate eutrophication, the process caused by nutrient over-enrichment. Large populations of phytoplankton are referred to as blooming events or algal blooms. The die-off of phytoplankton within large scale blooms depletes a water body of dissolved oxygen, stunting the survivability of aquatic species within that ecosystem. Certain species of phytoplankton also produce harmful toxins, such as dinoflagellates which cause red tide events. Eutrophication, the excess input of nutrients through human sources to a water body, is the primary contributor to algal blooming events. Contributors to eutrophication in nearshore waters are typically in the form of wastewater from sewage treatment plants, as well as excess fertilizer and agricultural runoff. 
 
-Since 1991, the [Connecticut Department of Energy and Environmental Protection (CT DEEP)](https://portal.ct.gov/DEEP/Water/LIS-Monitoring/LIS-Water-Quality-and-Hypoxia-Monitoring-Program-Overview) and the [Interstate Environmental Commission (IEC)](https://www.iec-nynjct.org/programs/water/sound-monitoring) have conducted an intensive water quality monitoring program on Long Island Sound. The program is funded through a grant from the U.S. Environmental Protection Agency's (EPA) [Long Island Sound Study](https://longislandsoundstudy.net/). Data from these surveys are used to quantify and identify annual trends and differences in water quality parameters and characterize phytoplankton blooms. This data is used to evaluate the effectiveness of the Long Island Sound water quality management programs' efforts to reduce nutrient inputs with emphasis on nitrogen, as nitrogen is a primary contributor to excessive algae growth in Long Island Sound.  
+Since 1991, the [Connecticut Department of Energy and Environmental Protection (CT DEEP)](https://portal.ct.gov/DEEP/Water/LIS-Monitoring/LIS-Water-Quality-and-Hypoxia-Monitoring-Program-Overview) has conducted an intensive water quality monitoring program on Long Island Sound. The program is funded through a grant from the U.S. Environmental Protection Agency's (EPA) [Long Island Sound Study](https://longislandsoundstudy.net/). Data from these surveys are used to quantify and identify annual trends and differences in water quality parameters and characterize phytoplankton blooms. These data are used to evaluate the effectiveness of the Long Island Sound water quality management programs' efforts to reduce nutrient inputs with emphasis on nitrogen, as nitrogen is a primary contributor to excessive algae growth in Long Island Sound.  
 
-During the spring of 2024 (February through April), surveys were conducted across LIS at monthly intervals to monitor the extent and duration of phytoplankton blooms. Surveys included sample collection of dissolved oxygen, temperature, salinity, nutrients and chlorophyll at 17 sites (Figure 1). A subset of 10 stations were also sampled for phytoplankton community composition (Figure 7).    
+During the spring of 2024 (January through April), surveys were conducted across LIS at monthly intervals to monitor the extent and duration of phytoplankton blooms. Surveys included sample collection of dissolved oxygen, temperature, salinity, nutrients and chlorophyll at 17 sites (Figure 1). A subset of 10 stations were also sampled for phytoplankton community composition (Figure 7).    
 
-```{r, fig.cap = '<i> Click on the interactive map above to explore the average chlorophyll (mg/m^3) per sample station in Long Island Sound for the spirng 2024 sampling season (Feb-Apr). Colors indicate critical threshold levels of chlorophyll-a designated by the EcoHealth Report Card system used by Save the Sound where chlorophyll-a levels of <5.6 mg/m^3 are shown in blue, 7.0-8.2 in yellow, and >8.2 in red. </i>'}
+```{r, fig.cap = '<i> Click on the interactive map above to explore the average chlorophyll (ppb) per sample station in Long Island Sound for the spirng 2024 sampling season (Feb-Apr). Colors indicate critical threshold levels of chlorophyll-a designated by the EcoHealth Report Card system used by Save the Sound where chlorophyll-a levels of <5.6 ppb are shown in blue, 7.0-8.2 ppb in yellow, and >8.2 ppb in red. </i>'}
 
 library(leaflet)
 library(sf)
@@ -49,8 +49,9 @@ library(scales)
 library(ggh4x)
 
 
+
 #Chlorophyll Data for Map 
-survey_chlorophyll <- read.csv("LIS2024_spring_chl_sampled.csv",  header = TRUE, na.strings=c("-9999",""))
+survey_chlorophyll <- read.csv("Data/LIS2024_spring_chl_sampled.csv",  header = TRUE, na.strings=c("-9999",""))
 
 chlorophyll_spring_average <- survey_chlorophyll  %>% 
   select(Station.Name, Result, Latitude, Longitude) %>% 
@@ -60,7 +61,7 @@ chlorophyll_spring_average <- survey_chlorophyll  %>%
 
 
 #Station Locations
-DEEP_sample_stations <- read.csv("awX_stations.csv", header = TRUE)
+DEEP_sample_stations <- read.csv("Data/awX_stations.csv", header = TRUE)
 LIS_sample_stations <- DEEP_sample_stations[3100:3116,c(1,2,3,4,5)]
 
 station_coords <- LIS_sample_stations %>% select(WaterbodyName, ylat, xlong) %>% rename(Station.Name = WaterbodyName) 
@@ -83,7 +84,7 @@ survey_map <-leaflet(width = "100%") %>%
                   #color = ~ifelse(spring_avg_chl_map_data$Average_chl>7, "#FDB515","#0072BC"), #Brand Standard Colors Yellow > 7.0, Blue < 5.6
                   color = ~report_card_pal(Average_chl),
                   popup=~paste("<br> Station ", spring_avg_chl_map_data$Station.Name,
-                            "<br>Average Chlorophylla (mg/m^3) for spring 2024:", spring_avg_chl_map_data$Average_chl))
+                            "<br>Average Chlorophylla (ppb) for spring 2024:", spring_avg_chl_map_data$Average_chl))
 
 survey_map
 ```
@@ -96,33 +97,36 @@ survey_map
 
 Phytoplankton blooms are often brought on by the excessive input of nitrogen and phosphorus to an aquatic ecosystem. In marine ecosystems specifically, nitrogen is the primary contributor to increased algal growth. Phytoplankton feed off the nutrient input and reproduce leading to rapid population growth over a short period of time. Algal blooms themselves can be harmful to aquatic life and human health due to toxins produced by certain species; however, the aftermath of large algal blooms are also harmful to aquatic ecosystems. The rapid population growth of phytoplankton species leads to the depletion of nutrients. This, in turn, leads to a large-scale decline in population size as the phytoplankton die due to lack of available food. During these die-off events dead phytoplankton will decompose with the assistance of oxygen consuming bacteria, which then also grow in population size with the abundance of new decomposing material. This process depletes the water column of dissolved oxygen leading to hypoxia, or low oxygen conditions. Motile organisms will then leave these hypoxic areas, if possible, but often sessile organisms die in these low oxygen environments.   
 
-The amount, or biomass, of phytoplankton present is important to understanding their function in a system, and is often estimated by measuring the amount of chlorophyll. While the state of Connecticut does not have water quality standards for chlorophyll-a in Long Island Sound, thresholds designed by the Center for Environmental Science Integration and Application Network at the University of Maryland have been adopted by the Long Island Sound Study. These thresholds were developed as part of the [Eco Health Report Card for Long Island Sound](https://ecoreportcard.org/report-cards/long-island-sound/indicators/chlorophyll-a/).The Report Card grades LIS chlorophyll-a concentrations across a range from healthy conditions receiving a grade A, to more harmful conditions receiving a grade F. These thresholds for Long Island Sound are as follows: Grade A < 5.6 ppb, grade B 5.6- 6.2 ppb, grade C 6.2- 7.0 pbb, D 7.0- 8.2 , and grade F > 8.2 pbb. Below are time series videos comparing surface chlorophyll concentrations in Long Island Sound from the spring 2003 survey season and the spring 2024 survey season. The maps displayed in this time series were created using spatial interpolations of chlorophyll samples taken from 17 sample stations across Long Island Sound on a monthly basis. In spring 2003, the majority of Long Island Sound was in the F range during the first sampled period (January 28th- February 14th), with a bloom extending from the western basin. Over the rest of the spring 2003 season (March-April) chlorophyll concentrations decreased across the majority of the Sound resulting in most areas being classified in the A range.  Concentrations in the western basin, however, remained elevated resulting in the basin falling in the F range for the entire season. During the spring 2024, the majority of the sound remained in the healthy A range for the entire spring sampling season.  
+The amount, or biomass, of phytoplankton present is important to understanding their function in a system, and is often estimated by measuring the amount of chlorophyll. While the state of Connecticut does not have water quality standards for chlorophyll-a in Long Island Sound, thresholds have been adopted by the Long Island Sound Study as part of the [Eco Health Report Card for Long Island Sound](https://ecoreportcard.org/report-cards/long-island-sound/indicators/chlorophyll-a/). The Report Card grades LIS chlorophyll-a concentrations across a range with healthy conditions receiving an "A" grade, to more harmful conditions receiving an "F"grade. These thresholds for Long Island Sound are as follows: Grade A < 5.6 ppb, grade B 5.6- 6.2 ppb, grade C 6.2- 7.0 pbb, D 7.0- 8.2 , and grade F > 8.2 pbb. Below are time series videos comparing surface chlorophyll concentrations in Long Island Sound from the spring 2003 survey season and the spring 2024 survey season. The maps displayed in this time series were created using spatial interpolations of chlorophyll samples taken from 17 sample stations across Long Island Sound on a monthly basis. In spring 2003, the majority of Long Island Sound was in the F range during the first sampled period (January 28th- February 14th), with a bloom extending from the western basin. Over the rest of the spring 2003 season (March-April) chlorophyll concentrations decreased across the majority of the Sound resulting in most areas being classified in the A range.  Concentrations in the western basin, however, remained elevated resulting in the basin falling in the F range for the entire season. In contrast, during the spring of 2024, the majority of the Sound remained in the healthy A range for the entire spring sampling season.  
 
 </br>
 
 
 <video width="100%" controls>
-  <source src="new_Spring2003_chlorophyll_map.mp4" type="video/mp4">
+  <source src="images/new_Spring2003_chlorophyll_map.mp4" type="video/mp4">
 </video>
 
 </br>
 
 <video width="100%" controls>
-  <source src="new_Spring2024_chlorophyll_map.mp4" type="video/mp4">
+  <source src="images/new_Spring2024_chlorophyll_map.mp4" type="video/mp4">
 </video>
 
 </br>
 
-The Spring 2003 sampling season had higher concentrations of chlorophyll-a across a larger area of Long Island Sound than the 2024 spring sampling season. Higher concentrations of chlorophyll-a are typically equivalent to larger concentrations of plankton biomass which, during their decomposition process, contribute to large hypoxic areas. Therefore, the higher concentrations of chlorophyll-a across surface waters in Long Island Sound in spring 2003 led to a maximum hypoxic area of 894 sq km in the summer of 2003. In comparison, the lower concentrations observed in the 2024 spring sampling season led to a maximum hypoxic area of only 112.4 sq km the following summer. Although phytoplankton are naturally occurring, population surges typically stem from anthropogenic influences and occur in areas with less circulation. This pattern is observed in Long Island Sound with algal blooms typically starting in the western narrows by New York City, a heavily populated region of the Sound, and stretching eastward. 
+The Spring 2003 sampling season had higher concentrations of chlorophyll-a across a larger area of Long Island Sound than the 2024 spring sampling season. Higher concentrations of chlorophyll-a are typically equivalent to larger concentrations of plankton biomass which, during their decomposition process, contribute to large hypoxic areas. The higher concentrations of chlorophyll-a across surface waters in Long Island Sound in spring 2003 gave rise to a maximum hypoxic area of 894 sq km in the summer of 2003. In comparison, the lower concentrations observed in the 2024 spring sampling season,coupled with other climatic factors, led to a maximum hypoxic area of only 112.4 sq km the following summer. Although phytoplankton are naturally occurring, population surges typically stem from anthropogenic influences and occur in areas with less circulation. This pattern is observed in Long Island Sound with algal blooms typically starting in the Western Narrows by New York City, a heavily populated region of the Sound, and stretching eastward. 
 
-Globally, 2003 had more precipitation than previous years, while also being one of the hottest years on record (Global Change Data Lab 2025). Increased precipitation contributes to greater rates of nutrient input to waterways via runoff, which in turn leads to increased algal growth in tidal estuaries like Long Island Sound. Warmer temperatures also increase algal growth as it alters the metabolic balance of marine ecosystems in favor of higher productivity (Yvon-Durocher et al 2010). Therefore, the combination of warmer years with higher annual rates of precipitation increases the chances of larger algal blooms. Although 2024 has since become the warmest year to date, and witnessed a 7 percent increase in precipitation within the United States from 2003 (Global Change Data Lab 2025), implementation of key environmental policies may have assisted in limiting the extent of hypoxia and size of algal blooms across Long Island Sound (Connecticut Sea Grant 2019). A few of these polices include the [Total Maximum Daily Load to Achieve Water Quality Standards for Dissolved Oxygen in Long Island Sound (TMDL)](https://neiwpcc.org/our-programs/pollution-control/lis-tmdl/) adopted in 2000, and the Nitrogen Credit Exchange Program in 2001, and the issuing of general permits requiring wastewater facilities meet annual nitrogen removal limits in 2002. 
+Globally, 2003 had more precipitation than previous years, while also being one of the hottest years on record (Global Change Data Lab 2025). Increased precipitation contributes to greater rates of nutrient input to waterways via runoff, which in turn leads to increased algal growth in tidal estuaries like Long Island Sound. Warmer temperatures also increase algal growth as it alters the metabolic balance of marine ecosystems in favor of higher productivity (Yvon-Durocher et al 2010). Therefore, the combination of warmer years with higher annual rates of precipitation increases the chances of larger algal blooms. Although 2024 has since become the warmest year to date, and witnessed a 7 percent increase in precipitation within the United States from 2003 (Global Change Data Lab 2025), implementation of key environmental policies may have assisted in limiting the extent of hypoxia and size of algal blooms across Long Island Sound (Connecticut Sea Grant 2019). One of these polices is the [Total Maximum Daily Load to Achieve Water Quality Standards for Dissolved Oxygen in Long Island Sound (TMDL)](https://neiwpcc.org/our-programs/pollution-control/lis-tmdl/). Adopted in 2000, the TMDL established a 58% nitrogen reduction target for the Sound. The CT Nitrogen Credit Exchange Program, [CT's Second Generation Nitrogen Strategy](https://portal.ct.gov/deep/water/lis-monitoring/lis-hypoxia-and-nitrogen-reduction-efforts), [EPA's Nitrogen Reduction Strategy for LIS](https://longislandsoundstudy.net/our-vision-and-plan/clean-waters-and-healthy-watersheds/nitrogen-strategy/), and [NY's Long Island Nitrogen Action Plan](https://dec.ny.gov/nature/waterbodies/oceans-estuaries/long-island-watershed-program/linap) are some of the initiatives developed to advance implementation of the TMDL and nitrogen reductions. 
 
 ```{r, out.width="100%", fig.cap = '<i> Spring seasonal averages of chlorophyll-a by year for all of Long Island Sound. A decreasing linear model is displayed in red.  </i>'}
+
+##install.packages(plotly)
+library(plotly)
 
 #Bar plot of spring chlorophyll average for all of LIS by year 
 #Add trend line
 
-chlorophyll_2003_2024 <- read.csv("2003_2024_chlorophyll.csv", header = TRUE, na.strings = c("", NA, "-999"))
+chlorophyll_2003_2024 <- read.csv("data/2003_2024_chlorophyll.csv", header = TRUE, na.strings = c("", NA, "-999"))
 
 #chlorophyll_2003_2024$Year <- format(as.Date(chlorophyll_2003_2024$Date, format = "%d/%m/%Y"), "%Y")
 
@@ -138,35 +142,36 @@ chlorophyll_2003_2024_spring <- chlorophyll_2003_2024 %>%
   summarize(Average_yearly_chl= mean(Result, na.rm = TRUE)) %>%
   mutate_if(is.numeric,round, 2)
 
-annual_chl <- ggplot(chlorophyll_2003_2024_spring, aes(x= Year, y= Average_Chlorophyll)) +
+chl_spring23_24 <-ggplot(chlorophyll_2003_2024_spring, aes(x= Year, y= Average_yearly_chl)) +
   geom_bar(stat = "identity", fill = "#0072BC") +
   geom_smooth(aes(group = 1), method = "lm", se= FALSE, color = "red")+ #Can comment out linear model trend line here
   labs(
     title = "Spring Seasonal Average Chlorophyll-a by Year Across LIS, 2003-2024",
     x = "Year",
-    y = "Average Chlorophyll-a (ppb)")+
+    y = "Average Chlorophyll-a (mg/m³)")+
   ylim(0,12)+
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 #axis.text.x = element_text(angle = 45, hjust = 1))
 
-ggplotly(annual_chl, tooltip = c("Average_Chlorophyll"), fig.align = "center")
+ggplotly(chl_spring23_24)
+
 ```
 
 <hr>
 ## **Remote Sensing in Long Island Sound**
 <hr>
 
-[NOAA CoastWatch](https://coastwatch.noaa.gov/cwn/index.html) is a platform issued by the National Oceanic and Atmospheric Administration (NOAA) to help people access and use satellite observations for ocean, coastal, and inland water applications (National Oceanic and Atmospheric Administration). Using remote sensing data from the Coastwatch data portal, time series of water quality parameters can be constructed with a greater frequency of information over a greater spatial area. However, it is important to combine satellite water quality observations with shipboard surveys for a more accurate and detailed analysis of a water body: where satellite images can expand the study area, in-person water quality samples provide ground truthing to ensure satellite observations are telling the same story as the water body being observed.  
+[NOAA CoastWatch](https://coastwatch.noaa.gov/cwn/index.html) is a platform created by the National Oceanic and Atmospheric Administration (NOAA) to help people access and use satellite observations for ocean, coastal, and inland water applications (National Oceanic and Atmospheric Administration 2025). Using remote sensing data from the Coastwatch data portal, time series of water quality parameters can be constructed with a greater frequency of information over a greater spatial area. However, it is important to combine satellite water quality observations with shipboard surveys for a more accurate and detailed analysis of a water body: where satellite images can expand the study area, in-person water quality samples provide ground truthing to ensure satellite observations are telling the same story as the water body being observed.  
 
-The graph below uses data from Sentinel 3 OLCI provided by NOAA CoastWatch (Figure 3). A CoastWatch compatible algorithm developed specifically for chlorophyll in Long Island Sound is also in the works by the [Tzortziou Bio-Optics Lab](TZORTZIOU BIO-OPTICS LAB - Home) at the City College of New York. However, data is not publicly available at the time of this report.    
+The graph below uses data from Sentinel 3 OLCI provided by NOAA CoastWatch (Figure 3). A CoastWatch compatible algorithm was developed specifically for chlorophyll in Long Island Sound by the [Tzortziou Bio-Optics Lab](TZORTZIOU BIO-OPTICS LAB - Home) at the City College of New York. While the LIS specific data are not publicly available on the CoastWatch website at the time of this report, the [LIS Ocean Color Data Portal](https://www.lisoceancolor.org/) provides information on the project and provides LIS specific satellite images.     
 
 ```{r, out.width="100%", fig.cap = '<i> Time series graph of satellite observed chlorophyll concentrations at sample stations in Long Island Sound during the 2024 spring survey season. </i>'}
 
 #Chlorophyll concentrations are averaged together based on the sample station's location in either the western, central, or eastern basin to achieve one value per basin for each week of the spring survey season. 
 
 #Load Data 
-observed_chl <- read.csv("Weekly_chl_observations_spring2024.csv", header = TRUE, na.strings="-9999")
+observed_chl <- read.csv("data/Weekly_chl_observations_spring2024.csv", header = TRUE, na.strings="-9999")
 
 #Group Data by Station 
 observed_chl_by_basin <- observed_chl %>%
@@ -191,7 +196,7 @@ avg_observed_chl_by_basin_long <- observed_chl_by_basin_long %>%
   summarise(Mean_Chlorophyll = mean(Chlorophyll, na.rm = TRUE), .groups = "drop") 
 
 #Plotting 
-basin_line_plot <- ggplot(avg_observed_chl_by_basin_long, aes (x= Week, y = Mean_Chlorophyll, color =Basin)) + 
+avg_obs_basin_long <- ggplot(avg_observed_chl_by_basin_long, aes (x= Week, y = Mean_Chlorophyll, color =Basin)) + 
   geom_line(size=1) +
   ylim(0,10) +
   labs( 
@@ -205,15 +210,16 @@ basin_line_plot <- ggplot(avg_observed_chl_by_basin_long, aes (x= Week, y = Mean
     legend.position = "right")+ 
   theme(axis.title.y= element_text(margin =margin (r=10)))
 
-ggplotly(basin_line_plot, tooltip = c("Mean_Chlorophyll"), fig.align = "center")
+ggplotly(avg_obs_basin_long)
 ```
 
-To create a time series by basin, the sample stations established by CT DEEP’s Long Island Sound Water Quality Monitoring Team (Figure 1) were divided into three regions: sections of western, central, and eastern basins. The western basin comprises eight stations (09,15, A4, B3, C1, C2, D3, and E1), the central basin comprises five stations (F2, F3, H2, H4, and H6), and the eastern basins comprises four stations (I2, J2, K2, and M3). Stations within each of the three basins were then averaged together respectively to create a singular averaged chlorophyll-a value per basin for each week of available satellite data. Broken down by sample station, and averaged across the 2024 sampling season, satellite observed chlorophyll-a concentrations follow similar trends to sampled data, with most observed chlorophyll-a values only within a singular value difference from the sampled chlorophyll concentrations per station (Figure 5).  
+To create a time series by basin, the sample stations established by CT DEEP’s Long Island Sound Water Quality Monitoring Program (Figure 1) were divided into three regions. The Western Basin comprises eight stations (09, 15, A4, B3, C1, C2, D3, and E1), the Central Basin comprises five stations (F2, F3, H2, H4, and H6), and the Eastern Basins comprises four stations (I2, J2, K2, and M3). Stations within each of the three basins were then averaged together respectively to create a singular averaged chlorophyll-a value per basin for each week of available satellite data. Broken down by sample station, and averaged across the 2024 sampling season, satellite observed chlorophyll-a concentrations follow similar trends to sampled data, with most observed chlorophyll-a values only within a singular value difference from the sampled chlorophyll concentrations per station (Figure 5).  
 
-Between January and May 2024, satellite imagery observed higher chlorophyll-a concentrations in the western basin of Long Island Sound than either the eastern or central basins, with the exception of one week in late January where the central basin had observed slightly higher values than the western basin (Figure 3). These observations are consistent with sample data collected by CT DEEP’s Long Island Sound Water Quality Monitoring Team for the spring 2024 season. In both the sampled and satellite observed data, the western basin of Long Island Sound is identified as a higher probability area for algal blooms. 
+Between January and May 2024, satellite imagery observed higher chlorophyll-a concentrations in the Western Basin of Long Island Sound than either the Eastern or Central basins, with the exception of one week in late January where the Central Basin had slightly higher observed values than the Western Basin (Figure 3). These observations are consistent with sample data collected by CT DEEP for the spring 2024 season. In both the sampled and satellite observed data, the Western Basin of Long Island Sound is identified as a higher probability area for algal blooms. 
 
 ```{r, out.width="100%", fig.cap = '<i> Satellite observed chlorphyll-a concentrations by station in Long Island Sound during the spring 2024 survey season. </i>'}
-station_line_plots <- ggplot(observed_chl_by_basin_long, aes(x = Week, y = Chlorophyll)) +
+
+ggplot(observed_chl_by_basin_long, aes(x = Week, y = Chlorophyll)) +
   geom_line(size = 1, alpha = 0.7, color = "#0D2D6c") + 
   facet_wrap(~ Sttn_Nm, scales = "fixed") + 
   labs(
@@ -223,17 +229,15 @@ station_line_plots <- ggplot(observed_chl_by_basin_long, aes(x = Week, y = Chlor
   ) +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"), axis.title.y= element_text(margin =margin (r=10)))
-
-ggplotly(station_line_plots, tooltip = c("Chlorophyll"), fig.align = "center") #Seems to cut off y-axis label when made into an interactive graph, unsure why or how to fix
 ```
 
-Similar to the averaged chlorophyll concentrations by basin (Figure 3), satellite observed chlorophyll separated by station (Figure 4) also displays an increase in concentrations during the month of February for most individual stations. These satellite observations are corroborated with in situ data which also shows higher chlorophyll concentrations in Long Island Sound during the month of February, particularly in the western and central basins as shown in the previous 2024 spatial interpolation animation video.  
+Similar to the averaged chlorophyll concentrations by basin (Figure 3), satellite observed chlorophyll separated by station (Figure 4) also displays an increase in concentrations during the month of February for most individual stations. These satellite observations are corroborated with in situ data which also shows higher chlorophyll concentrations in Long Island Sound during the month of February, particularly in the Western and Central Basins as shown in the previous 2024 spatial interpolation animation video.  
 
 </br>
 
 ```{r, out.width="100%", fig.cap = '<i> Average satelitte observed chlorophyll-a concentrations versus in situ sampled chlorophyll concentrations per sample station in Long Island Sound across the spring 2024 survey season. </i>'}
 #Load Sampled Data 
-Sampled_monthly_chl <-read.csv("LIS2024_spring_chl_sampled.csv", header=TRUE)
+Sampled_monthly_chl <-read.csv("Data/LIS2024_spring_chl_sampled.csv", header=TRUE)
 
 
 #Average Observed and Sampled Data by Station Respectively 
@@ -289,9 +293,10 @@ ggplot(bar_plot_data, aes(x = interaction(Sttn_Nm, Basin), y = Average, fill = T
   theme_light() + 
   scale_x_discrete(guide = "axis_nested")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
 ```
 
-When compared, in situ sampled chlorophyll concentrations vary slightly from satellite observed concentrations per station (Figure 5). Station A4 in particular varies the most between sampled and observed values, likely because this station sees the greatest fluctuations in chlorophyll concentration over the survey season due to its proximity to New York City, and the lack of incoming tidal currents to dilute nutrient input. These smaller differences between sampled and observed values likely stem from the difference in sampling frequency. While satellite observed chlorophyll data was observed daily and averaged over two-week intervals, in situ chlorophyll samples were collected once a month over a three-day period. By comparing data sets with different frequencies of measurements there is a greater chance for discrepancies in the data as seen in the chart above (Figure 5).  
+When compared, in situ sampled chlorophyll concentrations vary slightly from satellite observed concentrations per station (Figure 5). Station A4 shows the most variability between sampled and observed values, likely because this station sees the greatest fluctuations in chlorophyll concentration over the survey season due to its proximity to New York City, and the lack of incoming tidal currents to dilute nutrient input. The differences between sampled and observed values likely stem from the difference in sampling frequency. While satellite observed chlorophyll data was observed daily and averaged over two-week intervals, in situ chlorophyll samples were collected once a month over a three-day period. By comparing data sets with different frequencies of measurements there is a greater chance for discrepancies in the data as seen in the chart above (Figure 5).  
 
 </br>
 
@@ -299,13 +304,17 @@ When compared, in situ sampled chlorophyll concentrations vary slightly from sat
 ## **Phytoplankton in Long Island Sound** 
 <hr>
 
-Phytoplankton are critical to the health of marine ecosystems. As autotrophic organisms, phytoplankton form the base of the aquatic food web while also producing a large portion of Earth's oxygen, regulating ocean nutrient cycles, and assisting in the removal of carbon dioxide from the atmosphere (Suthers et al 2019). Often, phytoplankton have been compared to canaries in the coal mine with their sensitivity to environmental changes. This high sensitivity to change allows researchers to identify the health of the water body based on phytoplankton diversity and abundance (Suthers et al 2019). Phytoplankton in nutrient saturated waters typically display a rapid increase in population growth; therefore, rapid population growth is an indicator of heavy nutrient input. This pattern is commonly reflected in the western basin of Long Island Sound during the spring and summer, where productivity rates increase with the warming season leading to greater inputs of nutrients from the land.  
+Phytoplankton are critical to the health of marine ecosystems. As autotrophic organisms, phytoplankton form the base of the aquatic food web while also producing a large portion of Earth's oxygen, regulating ocean nutrient cycles, and assisting in the removal of carbon dioxide from the atmosphere (Suthers et al 2019). Often, phytoplankton have been compared to canaries in the coal mine with their sensitivity to environmental changes. This high sensitivity to change allows researchers to identify the health of the water body based on phytoplankton diversity and abundance (Suthers et al 2019). Phytoplankton in nutrient saturated waters typically display a rapid increase in population growth; therefore, rapid population growth is an indicator of heavy nutrient input. This pattern is commonly reflected in the Western Basin of Long Island Sound during the spring and summer, where productivity rates increase with the warming season leading to greater inputs of nutrients from the land.  
 
-Phytoplankton abundance per sample station in Long Island Sound are shown below. Samples were collected between late January and early April 2024 to summarize the 2024 spring survey season.  Click each station to view the phytoplankton abundance (cell counts per liter). 
+Phytoplankton samples are collected at 10 stations across the Sound by CTDEEP. Sample processing and species counts/identification are conducted by the [Lin Lab](https://phytoplankton.uconn.edu/) at the University of Connecticut Avery Point.
+
+
+The interactive map below shows phytoplankton abundance by station across Long Island Sound. Samples were collected between late January and early April 2024 to summarize the 2024 spring survey season.  Click each station to view counts (cells per liter). 
+ 
 
 ```{r,fig.cap = '<i> Phytoplankton abundance per sample station in Long Island Sound during the Spring 2024 sampling season. </i>'}
 #Load Data
-Plankton <- read.csv("Phytoplankton_average_abundance_Jan_Apr.csv", header = TRUE, na.strings = "")
+Plankton <- read.csv("Data/Phytoplankton_average_abundance_Jan_Apr.csv", header = TRUE, na.strings = "")
 
 #Mapping
 Plankton_map <- leaflet(width="100%") %>%
@@ -325,14 +334,14 @@ Plankton_map <- leaflet(width="100%") %>%
 Plankton_map
 ```
 
-The phytoplankton community in Long Island Sound is composed mostly of Diatoms (Figure 7). Diatoms, one of the major species groups of phytoplankton, are silica-based microalgae that can be found in marine, freshwater, and even within the soils of terrestrial ecosystems. This particular species of algae commonly dominates estuarine ecosystems, like Long Island Sound, due to their wide range in salinity tolerance, ability to use silica which is often abundant in these ecosystems, and the high nutrient availability of estuaries.  
+The phytoplankton community in Long Island Sound is composed mostly of Diatoms (Figures 7 and 8). Diatoms, one of the major species groups of phytoplankton, are silica-based microalgae that can be found in marine, freshwater, and even within the soils of terrestrial ecosystems. This particular species of algae commonly dominates estuarine ecosystems, like Long Island Sound, due to their wide range in salinity tolerance, ability to use silica which is often abundant in these ecosystems, and the high nutrient availability of estuaries.  
 
-```{r, out.width="100%", fig.cap = '<i> Cells count of phytoplankton categorized by major groups per month at each sampleing station across Long Island Sound from January to April 2024. </i>'}
+```{r, out.width="100%", fig.cap = '<i> Cell counts of phytoplankton categorized by major groups per month at each sampleing station across Long Island Sound from January and February 2024. </i>'}
 #Prevents Scientific Notation 
 options(scipen = 999)
 
 #Reading Data 
-cell_count_surface_phytoplankton <- read.csv("surface_cell_count_phytoplankton.csv", header = FALSE, na.strings= c("", NA))
+cell_count_surface_phytoplankton <- read.csv("data/surface_cell_count_phytoplankton.csv", header = FALSE, na.strings= c("", NA))
 
 #A4, All Months, Surface Vs Bottom 
 Stations <- cell_count_surface_phytoplankton[1,-1] #1st row is stations names, mins first column
@@ -365,7 +374,7 @@ Spring_surface_plankton_data2 <- surface_cell_count_phytoplankton_long[surface_c
 Spring_surface_plankton_data2$Month_Name <- factor(Spring_surface_plankton_data2$Month, levels = month.abb, labels = month.name)
 
 #Jan-Feb Plot (Figure 7)
-ggplot(Spring_surface_plankton_data1, aes(x= Station, y= Cell_Count, fill = Species))+
+ Jan_Feb <- ggplot(Spring_surface_plankton_data1, aes(x= Station, y= Cell_Count, fill = Species))+
       geom_bar(stat="Identity", position= "stack")+
       ggtitle(paste("Surface Phytoplankton in Long Island Sound, Spring 2024"))+
       xlab("Sample Stations")+
@@ -374,11 +383,13 @@ ggplot(Spring_surface_plankton_data1, aes(x= Station, y= Cell_Count, fill = Spec
       facet_wrap(~Month_Name)+
       theme_minimal()+
       theme(axis.title.y=element_text(margin=margin(r=10)))
+
+ggplotly (Jan_Feb)
 ```
 
-```{r, out.width="100%", fig.cap = '<i> Cells count of phytoplankton categorized by major groups per month at each sampleing station across Long Island Sound from March and April 2024. </i>'}
+```{r, out.width="100%", fig.cap = '<i> Cell counts of phytoplankton categorized by major groups per month at each sampleing station across Long Island Sound from March and April 2024. </i>'}
 #March - April phytoplankton cell count plot (Figure 8) 
-ggplot(Spring_surface_plankton_data2, aes(x= Station, y= Cell_Count, fill = Species))+
+Mar_Apr <- ggplot(Spring_surface_plankton_data2, aes(x= Station, y= Cell_Count, fill = Species))+
       geom_bar(stat="Identity", position= "stack")+
       ggtitle(paste("Surface Phytoplankton in Long Island Sound, Spring 2024"))+
       xlab("Sample Stations")+
@@ -387,13 +398,16 @@ ggplot(Spring_surface_plankton_data2, aes(x= Station, y= Cell_Count, fill = Spec
       facet_wrap(~Month_Name)+
       theme_minimal()+
       theme(axis.title.y=element_text(margin=margin(r=10)))
-```
 
-Although Diatoms dominate the spring season in Long Island Sound, they can often be out competed by other species including Dinoflagellates in the summer months (Figure 9).  This decline in Diatom species during the summer is likely due to stratification of the water column. Stratification is a common phenomenon where stable layers form within the water column due to differing densities caused by temperature differences, preventing vertical circulation of nutrients, dissolved oxygen, and vertical transport of species like phytoplankton. When trapped in nutrient limited layers with little light penetration, species groups mostly compose of photosynthetic species, like Diatoms, have limited means of survival. However, species groups like Dinoflagellates, where many species have the ability to produce their own food, perform much better in these nutrient limited layers.  
+ggplotly (Mar_Apr)
+```
+<br>
+
+Although Diatoms dominate the spring phytoplankton assemblage in Long Island Sound, they can often be out competed by other species including Dinoflagellates in the summer months, as shown in August in the plot below (Figure 9). This may be due in part to the stratification of the water column over the summer months which can trap phytoplankton at different depths with varying degrees of nutrient availability and light penetration. Dinoflagellates have the competitive advantage of being both autotrophic and heterotrophic, meaning they are able to absorb organic matter or engulf prey in addition to photosynthesizing. Diatoms are primarily autotrophic and rely on photosynthesis for nutrition.  
 
 ```{r, out.width="100%", fig.cap = '<i> Surface phytoplankton relative abundance plots per station in Long Island Sound from January to October 2024. </i>'}
 #Reading in Data Frame
-surface_phytoplankton <- read.csv("surface_phytoplankton_rel_abund_2024_no_nanoplankton.csv", header= TRUE, na.strings= c("", NA))
+surface_phytoplankton <- read.csv("Data/surface_phytoplankton_rel_abund_2024_no_nanoplankton.csv", header= TRUE, na.strings= c("", NA))
 
 #Transforming Data to "Long" for Plotting
 surface_phytoplankton_long <- gather(surface_phytoplankton, Species, Abundance, Diatom:Small_Flagellates)
@@ -403,7 +417,7 @@ Surface_phytoplankton_plotting_data <- surface_phytoplankton_long %>% mutate(Spe
 Surface_phytoplankton_plotting_data$Month <- factor(Surface_phytoplankton_plotting_data$Month, levels= month.abb)
 
 #Plotting 
-ggplot(Surface_phytoplankton_plotting_data, aes(x= Month, y= Abundance, fill= Species)) +
+Surf_plank_2024 <- ggplot(Surface_phytoplankton_plotting_data, aes(x= Month, y= Abundance, fill= Species)) +
   geom_bar(stat= "Identity")+ 
   #scale_x_discrete(limits= month.abb)+
   xlab("Survey Month") +
@@ -411,21 +425,23 @@ ggplot(Surface_phytoplankton_plotting_data, aes(x= Month, y= Abundance, fill= Sp
   ggtitle("Relative Abundance of Surface Phytoplankton in LIS, Jan-Oct 2024")+
   theme_minimal()+
   theme(axis.title.y=element_text(margin=margin(r=10)))
+
+ggplotly (Surf_plank_2024)
 ```
 
-Aside from Diatoms and Dinoflagellates, other common species groups found in Long Island Sound over the course of 2024 include Cryptophytes, Prasinophytes, and Ochrophytes (Figure 7 and 8). While the majority of Cryptophytes, Prasinophytes, and Ochrophytes are autotrophes, there are some species with each group that are considered mixotrophic, where they can switch between autotrophic and heterotrophic states to survive in nutrient poor environments. It is likely these mixotrophic species within each group are responsible for the increase in group relative abundance during the summer months of 2024 (Figure 7 and 8).   
+Aside from Diatoms and Dinoflagellates, other common species groups found in Long Island Sound over the course of 2024 included Cryptophytes, Prasinophytes, and Ochrophytes (Figure 8). While the majority of Cryptophytes, Prasinophytes, and Ochrophytes are autotrophes, there are some species with each group that are considered mixotrophic, meaning they can switch between autotrophic and heterotrophic states to survive in nutrient poor environments. It is likely these mixotrophic species within each group are responsible for the increase in group relative abundance during the summer months of 2024 (Figure 10).   
 
 Pictured below are examples of phytoplankton species identified in-house by the Connecticut Department of Energy and Environmental Protection Water Quality Monitoring Team including *Eucampia zodiacus* belonging to the Diatom group (Figure 10.2) and *Dictyocha spp.* (Figure 10.6) falling under the Silicoflagellates group. 
 
-```{r, fig.align= "center", out.height= "50%", out.width= "50%", fig.cap = '<i>Phytoplankton found in Long Island Sound 1)Skeletonema spp. 2)Eucampia zodiacus 3)Chaetoceros spp. 4)Nitzschia longissima 5)Thalassionema nitzschioides 6)Dictyocha spp. Identification completed by Connecticut Department of Energy and Environmental Protection Long Island Sound Water monitoring Team. </i>'}
+```{r, fig.align= "center", out.height= "50%", out.width= "50%", fig.cap = '<i>Phytoplankton found in Long Island Sound 1)Skeletonema spp. 2)Eucampia zodiacus 3)Chaetoceros spp. 4)Nitzschia longissima 5)Thalassionema nitzschioides 6)Dictyocha spp. Identification completed by Connecticut Department of Energy and Environmental Protection Long Island Sound Water Monitoring Team. </i>'}
 
-knitr::include_graphics("plankton_figure.png")
+knitr::include_graphics("images/plankton_figure.png")
 
 ```
 
 </br>
 
-Phytoplankton samples for the 2024 spring survey season were collected by Connecticut’s Department of Energy and Environmental Protection Long Island Sound Water Quality Monitoring Team. Sample processing and species counts/identification are conducted by the [Lin Lab](https://phytoplankton.uconn.edu/) at the University of Connecticut Avery Point. The most common bloom species across all sample locations for the 2024 spring survey season were *Skeletonema spp.*, *Guinardia delicatula*, and *Thalassionema nitzschiodes* (Figure 11).   
+The most common species across all sample locations for the 2024 spring survey season were *Skeletonema spp.*, *Eucampia zodiacus*, and *Guinardia delicatula* (Figure 11).   
 
 </br>
 
@@ -434,21 +450,54 @@ Phytoplankton samples for the 2024 spring survey season were collected by Connec
 #Prevents Scientific Notation 
 options(scipen = 999)
 
-plankton_raw_table <- read.csv("Phytoplankton_species_plot2024.csv", header= TRUE, na.strings= c("-999", "NA", "-"))
+plankton_raw_table <- read.csv("Data/plankton_abundance2024.csv", header= TRUE, na.strings= c("-999", "NA", "-"))
 
-#Plotting 
-plankton_species_plot <- ggplot(plankton_raw_table, aes(x= reorder(Species, -Average_Abundance), y = Average_Abundance))+
-  geom_bar(stat = "identity", fill = "#00AAE7")+
-  labs(title = "Phytoplankton Bloom Species in Long Island Sound, Jan - Apr 2024", x= "Phytoplankton Bloom Species in LIS", y= "Average Abundance (Cell Count/Liter)")+
-  theme_minimal()+
-  theme(axis.text = element_text(angle = 45, hjust = 1))
+#Cleaning Data (Removing and merging certain rows)
+#Removing Rows 
+#plankton_raw_table <- plankton_raw_table[-c(221,222), ]
 
-ggplotly(plankton_species_plot, tooltip = c("Average_Abundance"), fig.align = "center")
+#Average plankton counts 
+averaged_plankton_table <- plankton_raw_table %>%
+  rowwise() %>%
+  mutate(
+    A4_avg = mean(c_across(starts_with("A4")), na.rm = TRUE),
+    B3_avg = mean(c_across(starts_with("B3")), na.rm = TRUE),
+    C1_avg = mean(c_across(starts_with("C1")), na.rm = TRUE),
+    D3_avg = mean(c_across(starts_with("D3")), na.rm = TRUE),
+    E1_avg = mean(c_across(starts_with("E1")), na.rm = TRUE),
+    F2_avg = mean(c_across(starts_with("F2")), na.rm = TRUE),
+    H4_avg = mean(c_across(starts_with("H4")), na.rm = TRUE),
+    I2_avg = mean(c_across(starts_with("I2")), na.rm = TRUE),
+    J2_avg = mean(c_across(starts_with("J2")), na.rm = TRUE),
+    K2_avg = mean(c_across(starts_with("K2")), na.rm = TRUE)
+  ) %>%
+  ungroup()
+
+
+#Calculate average abundance across all columns, exclude species with no data
+species_abundance2024 <- plankton_raw_table %>%
+  rowwise() %>%
+  mutate(Avg_Abundance = mean(c_across(-SampleID), na.rm = TRUE)) %>%
+  ungroup() %>%
+  filter(!is.na(Avg_Abundance)) %>%  #Filters out species with no data
+  arrange(desc(Avg_Abundance)) %>%
+  slice_head(n = 10) #Filters for the top 10 greatest
+
+
+#Plotting
+ggplot(species_abundance2024, aes(x = reorder(SampleID, -Avg_Abundance), y = Avg_Abundance)) +
+  geom_bar(stat = "identity", fill = "#00AAE7") + #Brand standard color "Clear Blue"
+  ylim(0, 1200000) +
+  labs(title= "Phytoplankton Species Abundance in Long Island Sound, Jan-Apr 2024", x = "Phytoplankton Species 2024", y="Average Cell Abundance") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
 ```
 
 </br>
 
-The phytoplankton species displayed above (Figure 11) are the most common bloom species found in Long Island Sound ordered by average abundance from samples collected over the spring 2024 survey season. Out of all phytoplankton species found in Long Island Sound during the spring survey period, *Skeletonema spp.* contributed the most to chlorophyll concentrations observed in collected samples. *Skeletonema spp.* are commonly the most abundant species in estuarine ecosystems as they prefer brackish waters and have a wide range in salinity tolerance (Balzano et al 2011). The broad salinity tolerance of *Skeletonema spp.* make Long Island Sound an ideal location for this species due to the frequent fluctuations in salinity based on season and location within the sound, a factor that inhibits more salinity sensitive species from thriving in the same environment. *Skeletonema spp.* also have the competitive advantage of a resting stage, where this species can survive in the bottom sediment of a waterbody during adverse conditions and resume growth as conditions become more favorable (Gu et al 2012). Spring and autumn blooms of *Skeletonema spp.* are associated with high partial pressure of dissolved carbon dioxide, a leading cause of ocean acidification. Ocean acidification has been shown to alleviate the negative effects of low temperatures and daylight conditions on the growth rate of *Skeletonema costatum*, assisting species growth earlier in the spring season as acidification increases (Li et al 2021). 
+The phytoplankton species displayed above (Figure 11) are the ten species with the greatest average abundance from samples collected over the spring 2024 survey season. Out of all phytoplankton species found in Long Island Sound during the spring survey period, *Skeletonema spp.* contributed the most to chlorophyll concentrations observed in collected samples. *Skeletonema spp.* are commonly the most abundant species in estuarine ecosystems as they prefer brackish waters and have a wide range in salinity tolerance (Balzano et al 2011). The broad salinity tolerance of *Skeletonema spp.* make Long Island Sound an ideal location for this species due to the frequent fluctuations in salinity based on season and location within the sound, a factor that inhibits more salinity sensitive species from thriving in the same environment. *Skeletonema spp.* also have the competitive advantage of a resting stage, where this species can survive in the bottom sediment of a waterbody during adverse conditions and resume growth as conditions become more favorable (Gu et al 2012). Spring and autumn blooms of *Skeletonema spp.* are associated with high partial pressure of dissolved carbon dioxide, a leading cause of ocean acidification. Ocean acidification has been shown to alleviate the negative effects of low temperatures and daylight conditions on the growth rate of *Skeletonema costatum*, assisting species growth earlier in the spring season as acidification increases (Li et al 2021). 
  
 </br>
 
@@ -458,7 +507,8 @@ The phytoplankton species displayed above (Figure 11) are the most common bloom 
 
 Water monitoring efforts in Long Island Sound support recreation, environmental health, and public safety. Water quality surveys of Long Island Sound, conducted on a monthly to bi-monthly basis, focus on chlorophyll monitoring in the spring season to capture early spring algal blooms. This chlorophyll focused monitoring season is then followed by hypoxia focused surveys in the summer sampling season, where dissolved oxygen is the main parameter of concern. As phytoplankton blooms and hypoxia have an interconnected relationship, focusing on these two water quality phenomenon together allows the state of Connecticut to form a better picture of the eutrophication process in Long Island Sound. 
 
-Phytoplankton communities are important to maintaining the ecosystem health of Long Island Sound. Although algal blooms of phytoplankton populations can be harmful, the presence of phytoplankton in aquatic ecosystems is essential not only for organisms directly sharing the same food web, but beyond the scope of their ecosystem alone in their capabilities of carbon sequestration and nutrient cycling. While the state of Connecticut monitors these phytoplankton populations for the presence of algal blooms, the further analysis of phytoplankton community composition done by state partners allows for a deeper look into the health and diversity of Long Island Sound as a tidal estuary. Through the exploration of our local phytoplankton communities, and monitoring of population changes and growth, indications provided by each can be used to evaluate the health of Long Island Sound, informing decision involving ecosystem management and public health
+Phytoplankton communities are important to maintaining the ecosystem health of Long Island Sound. Although algal blooms of phytoplankton populations can be harmful, the presence of phytoplankton in aquatic ecosystems is essential not only for organisms directly sharing the same food web, but beyond the scope of their ecosystem alone in their capabilities of carbon sequestration and nutrient cycling. While the state of Connecticut monitors these phytoplankton populations for the presence of algal blooms, the further analysis of phytoplankton community composition done by state partners allows for a deeper look into the health and diversity of Long Island Sound as a tidal estuary. Through the exploration of our local phytoplankton communities, and monitoring of population changes and growth, indications provided by each can be used to evaluate the health of Long Island Sound, informing decision involving ecosystem management and public health.
+
 
 </br>
 
@@ -476,7 +526,7 @@ Phytoplankton communities are important to maintaining the ecosystem health of L
 
 <!-- [**Interstate Environmental Commision**](https://www.iec-nynjct.org/programs/water/sound-monitoring) -->
 
-<a href="https://longislandsoundstudy.net/"><img src = "liss-logo.png"  alt = "LISS Logo" width="110" height="100"></a>
+<a href="https://longislandsoundstudy.net/"><img src = "images/liss-logo.png"  alt = "LISS Logo" width="110" height="100"></a>
 
 <!-- [**Long Island Sound Study**](https://longislandsoundstudy.net/) -->
 
